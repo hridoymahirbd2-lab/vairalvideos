@@ -26,27 +26,36 @@ app.post('/add-post', (req, res) => {
     res.redirect('/');
 });
 
-bot.onText(/\/start (.+)/, (msg, match) => {
+// টেলিগ্রাম বটের লজিক: ইউজার লিংক থেকে এসে /start কমান্ড দিলে ভিডিও পাঠাবে
+bot.on('message', (msg) => {
     const chatId = msg.chat.id;
-    const requestedId = match[1]; 
+    const text = msg.text;
 
-    const foundPost = posts.find(p => p.videoId === requestedId);
+    if (text && text.startsWith('/start')) {
+        const parts = text.split(' ');
+        if (parts.length > 1) {
+            const requestedId = parts[1]; // এটি হলো টেলিগ্রামের file_id
 
-    if (foundPost) {
-        bot.sendVideo(chatId, foundPost.videoId, { 
-            caption: `Here is your video: ${foundPost.title}\n\nIt will be automatically deleted after 1 hour.` 
-        })
-        .then((sentMessage) => {
-            setTimeout(() => {
-                bot.deleteMessage(chatId, sentMessage.message_id)
-                    .catch((err) => console.log("Deletion error:", err));
-            }, 3600000); 
-        })
-        .catch((err) => {
-            bot.sendMessage(chatId, "Sorry, failed to send the video.");
-        });
-    } else {
-        bot.sendMessage(chatId, "Sorry, video not found or invalid link.");
+            // posts অ্যারে থেকে fileId বা videoId খুঁজে বের করা
+            const foundPost = posts.find(p => p.videoId === requestedId);
+
+            if (foundPost) {
+                bot.sendVideo(chatId, foundPost.videoId, { 
+                    caption: `Here is your video: ${foundPost.title}\n\nIt will be automatically deleted after 1 hour.` 
+                })
+                .then((sentMessage) => {
+                    setTimeout(() => {
+                        bot.deleteMessage(chatId, sentMessage.message_id)
+                            .catch((err) => console.log("Deletion error:", err));
+                    }, 3600000); 
+                })
+                .catch((err) => {
+                    bot.sendMessage(chatId, "Sorry, failed to send the video. Make sure the file_id is correct.");
+                });
+            } else {
+                bot.sendMessage(chatId, "Sorry, video not found or invalid link.");
+            }
+        }
     }
 });
 
