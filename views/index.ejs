@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Gallery</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Video Gallery</h1>
+        <div class="posts-container">
+            <% posts.forEach(post => { %>
+                <div class="post-card">
+                    <img src="<%= post.thumbnail %>" alt="Thumbnail">
+                    <h3><%= post.title %></h3>
+                    <a href="https://t.me/YourBotName?start=<%= post.videoId %>" target="_blank" class="btn">Watch Video</a>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+</html>
