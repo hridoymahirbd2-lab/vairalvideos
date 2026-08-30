@@ -2,16 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="/style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 40px; text-align: center; }
+        .form-box { background: white; max-width: 400px; margin: 0 auto; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        button { background: #0088cc; color: white; border: none; padding: 12px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 95%; font-size: 15px; }
+        button:hover { background: #006699; }
+    </style>
 </head>
 <body>
-    <div class="form-container">
+    <div class="form-box">
         <h2>Add New Video Post</h2>
         <form action="/add-post" method="POST">
-            <input type="text" name="title" placeholder="Video Title" required>
-            <input type="text" name="thumbnail" placeholder="Thumbnail Image URL (ImgBB link)" required>
-            <input type="text" name="videoId" placeholder="Telegram Video file_id paste here" required>
+            <input type="text" name="title" placeholder="Video Title" required><br>
+            <input type="text" name="thumbnail" placeholder="Thumbnail Image URL" required><br>
+            <input type="text" name="videoId" placeholder="Telegram Video File ID" required><br>
             <button type="submit">Publish Post</button>
         </form>
     </div>
