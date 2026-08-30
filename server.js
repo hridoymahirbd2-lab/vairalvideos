@@ -1,107 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Gallery</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            text-align: center;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        /* হোমপেজের সবসময়ের ব্যানার অ্যাড স্টাইল */
-        .banner-ad {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 15px;
-            margin: 15px auto;
-            max-width: 500px;
-            border-radius: 5px;
-        }
-        .banner-ad a {
-            color: #856404;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .post-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 300px;
-            margin: 20px auto;
-            padding: 15px;
-            text-align: center;
-        }
-        .post-card img {
-            width: 100%;
-            border-radius: 6px;
-            height: 180px;
-            object-fit: cover;
-        }
-        .post-card h3 {
-            margin: 10px 0;
-            font-size: 18px;
-            color: #444;
-        }
-        .btn {
-            display: inline-block;
-            background-color: #0088cc;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #006699;
-        }
-    </style>
-</head>
-<body>
+const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
+const path = require('path');
+const app = express();
 
-    <h1>Video Gallery</h1>
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
-    <!-- হোমপেজের সবসময়কার ব্যানার অ্যাড -->
-    <div class="banner-ad">
-        <p>⭐ Sponsored Advertisement ⭐</p>
-        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
-    </div>
+const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
+const bot = new TelegramBot(token, { polling: true });
 
-    <% if (posts && posts.length > 0) { %>
-        <% posts.forEach(post => { %>
-            <div class="post-card">
-                <% if (post.thumbnail) { %>
-                    <img src="<%= post.thumbnail %>" alt="Thumbnail">
-                <% } %>
-                <h3><%= post.title %></h3>
-                <!-- Watch Video বাটনে ক্লিক করলে অ্যাড দেখাবে এবং ৩০ সেকেন্ডের মেসেজ দেবে -->
-                <button class="btn" onclick="watchVideo('<%= post.videoId %>')">Watch Video</button>
-            </div>
-        <% }) %>
-    <% } else { %>
-        <p>No videos available yet.</p>
-    <% } %>
+let posts = [];
 
-    <script>
-        function watchVideo(videoId) {
-            // ১. নতুন ট্যাবে আপনার অ্যাড লিংকটি ওপেন হবে
-            window.open("https://omg10.com/4/11691048", "_blank");
+app.get('/', (req, res) => {
+    res.render('index', { posts });
+});
 
-            // ২. ইউজারকে ৩০ সেকেন্ড অপেক্ষা করতে বলা হবে এবং তারপর টেলিগ্রাম বট লিংক ওপেন হবে
-            alert("দয়া করে ৩০ সেকেন্ড অপেক্ষা করুন, এরপর ভিডিওটি টেলিগ্রামে চলে যাবে!");
-            
-            setTimeout(function() {
-                window.location.href = "https://t.me/vairalvideoszarabot?start=" + videoId;
-            }, 30000); // ৩০ সেকেন্ড = ৩০০০০ মিলি সেকেন্ড
+app.get('/admin', (req, res) => {
+    res.render('admin');
+});
+
+app.post('/add-post', (req, res) => {
+    const { title, thumbnail, videoId } = req.body;
+    posts.push({ title, thumbnail, videoId });
+    res.redirect('/');
+});
+
+bot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    const text = msg.text;
+
+    if (text && text.startsWith('/start')) {
+        const parts = text.split(' ');
+        if (parts.length > 1) {
+            const requestedId = parts[1]; 
+            const foundPost = posts.find(p => p.videoId === requestedId);
+
+            if (foundPost) {
+                bot.sendVideo(chatId, foundPost.videoId, { 
+                    caption: `Here is your video: ${foundPost.title}\n\nIt will be automatically deleted after 1 hour.` 
+                })
+                .then((sentMessage) => {
+                    setTimeout(() => {
+                        bot.deleteMessage(chatId, sentMessage.message_id)
+                            .catch((err) => console.log("Deletion error:", err));
+                    }, 3600000); 
+                })
+                .catch((err) => {
+                    bot.sendMessage(chatId, "Sorry, failed to send the video.");
+                });
+            } else {
+                bot.sendMessage(chatId, "Sorry, video not found or invalid link.");
+            }
         }
-    </script>
+    }
+});
 
-</body>
-</html>
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server & Telegram Bot are running on port ${PORT}`);
+});

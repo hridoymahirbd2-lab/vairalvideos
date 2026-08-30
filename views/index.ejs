@@ -14,6 +14,19 @@
         h1 {
             color: #333;
         }
+        .banner-ad {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            margin: 15px auto;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+        .banner-ad a {
+            color: #856404;
+            font-weight: bold;
+            text-decoration: none;
+        }
         .post-card {
             background: #fff;
             border-radius: 8px;
@@ -43,6 +56,8 @@
             text-decoration: none;
             font-weight: bold;
             margin-top: 10px;
+            cursor: pointer;
+            border: none;
         }
         .btn:hover {
             background-color: #006699;
@@ -53,6 +68,11 @@
 
     <h1>Video Gallery</h1>
 
+    <div class="banner-ad">
+        <p>⭐ Sponsored Advertisement ⭐</p>
+        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
+    </div>
+
     <% if (posts && posts.length > 0) { %>
         <% posts.forEach(post => { %>
             <div class="post-card">
@@ -60,13 +80,23 @@
                     <img src="<%= post.thumbnail %>" alt="Thumbnail">
                 <% } %>
                 <h3><%= post.title %></h3>
-                <!-- এখানে সরাসরি টেলিগ্রাম বট লিংকের সাথে ভিডিওর আইডি যুক্ত করে দেওয়া হয়েছে -->
-                <a class="btn" href="https://t.me/vairalvideoszarabot?start=<%= post.videoId %>" target="_blank">Watch Video</a>
+                <button class="btn" onclick="watchVideo('<%= post.videoId %>')">Watch Video</button>
             </div>
         <% }) %>
     <% } else { %>
         <p>No videos available yet.</p>
     <% } %>
+
+    <script>
+        function watchVideo(videoId) {
+            window.open("https://omg10.com/4/11691048", "_blank");
+            alert("দয়া করে ৩০ সেকেন্ড অপেক্ষা করুন, এরপর ভিডিওটি টেলিগ্রামে চলে যাবে!");
+            
+            setTimeout(function() {
+                window.location.href = "https://t.me/vairalvideoszarabot?start=" + videoId;
+            }, 30000);
+        }
+    </script>
 
 </body>
 </html>
