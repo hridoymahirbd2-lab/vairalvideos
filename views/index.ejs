@@ -2,21 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Gallery</title>
-    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .post-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px;
+            text-align: center;
+        }
+        .post-card img {
+            width: 100%;
+            border-radius: 6px;
+            height: 180px;
+            object-fit: cover;
+        }
+        .post-card h3 {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #444;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #006699;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Video Gallery</h1>
-        <div class="posts-container">
-            <% posts.forEach(post => { %>
-                <div class="post-card">
+
+    <h1>Video Gallery</h1>
+
+    <% if (posts && posts.length > 0) { %>
+        <% posts.forEach(post => { %>
+            <div class="post-card">
+                <% if (post.thumbnail) { %>
                     <img src="<%= post.thumbnail %>" alt="Thumbnail">
-                    <h3><%= post.title %></h3>
-                    <a href="https://t.me/vairalvideoszarabot?start=<%= post.videoId %>" target="_blank" class="btn">Watch Video</a>
-                </div>
-            <% }) %>
-        </div>
-    </div>
+                <% } %>
+                <h3><%= post.title %></h3>
+                <!-- এখানে সরাসরি টেলিগ্রাম বট লিংকের সাথে ভিডিওর আইডি যুক্ত করে দেওয়া হয়েছে -->
+                <a class="btn" href="https://t.me/vairalvideoszarabot?start=<%= post.videoId %>" target="_blank">Watch Video</a>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>No videos available yet.</p>
+    <% } %>
+
 </body>
 </html>
