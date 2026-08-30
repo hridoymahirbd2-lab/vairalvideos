@@ -4,70 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Gallery</title>
+
+    <!-- Monetag Telegram SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='11691107' data-sdk='show_11691107'></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
             text-align: center;
             padding: 20px;
+            margin: 0;
         }
         h1 {
             color: #333;
+            margin-bottom: 20px;
         }
-        .banner-ad {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 15px;
-            margin: 15px auto;
-            max-width: 500px;
-            border-radius: 5px;
-        }
-        .banner-ad a {
-            color: #856404;
-            font-weight: bold;
-            text-decoration: none;
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
         }
         .post-card {
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 300px;
-            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 300px;
             padding: 15px;
             text-align: center;
+            box-sizing: border-box;
         }
         .post-card img {
             width: 100%;
-            border-radius: 6px;
+            border-radius: 8px;
             height: 180px;
             object-fit: cover;
         }
         .post-card h3 {
-            margin: 10px 0;
+            margin: 12px 0;
             font-size: 18px;
-            color: #444;
+            color: #333;
         }
         .btn {
             display: inline-block;
             background-color: #0088cc;
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
             border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+            transition: background 0.3s;
         }
         .btn:hover {
             background-color: #006699;
         }
-        /* কাউন্টডাউন মেসেজ স্টাইল */
-        .timer-msg {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #d9534f;
-            font-weight: bold;
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status-msg {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
         }
     </style>
 </head>
@@ -75,52 +78,46 @@
 
     <h1>Video Gallery</h1>
 
-    <div class="banner-ad">
-        <p>⭐ Sponsored Advertisement ⭐</p>
-        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
+    <div class="container">
+        <% if (posts && posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <div class="post-card">
+                    <% if (post.thumbnail) { %>
+                        <img src="<%= post.thumbnail %>" alt="Thumbnail">
+                    <% } %>
+                    <h3><%= post.title %></h3>
+                    <button class="btn" id="btn-<%= post.videoId %>" onclick="playAdAndRedirect('<%= post.videoId %>')">Watch Video</button>
+                    <div id="msg-<%= post.videoId %>" class="status-msg"></div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No videos available yet.</p>
+        <% } %>
     </div>
 
-    <% if (posts && posts.length > 0) { %>
-        <% posts.forEach(post => { %>
-            <div class="post-card">
-                <% if (post.thumbnail) { %>
-                    <img src="<%= post.thumbnail %>" alt="Thumbnail">
-                <% } %>
-                <h3><%= post.title %></h3>
-                <button class="btn" id="btn-<%= post.videoId %>" onclick="watchVideo('<%= post.videoId %>')">Watch Video</button>
-                <div id="timer-<%= post.videoId %>" class="timer-msg"></div>
-            </div>
-        <% }) %>
-    <% } else { %>
-        <p>No videos available yet.</p>
-    <% } %>
-
     <script>
-        function watchVideo(videoId) {
-            // ১. অ্যাড লিংক নতুন ট্যাবে ওপেন হবে
-            window.open("https://omg10.com/4/11691048", "_blank");
-
+        function playAdAndRedirect(videoId) {
             const btn = document.getElementById('btn-' + videoId);
-            const timerDiv = document.getElementById('timer-' + videoId);
-            
-            // বাটন ডিজেবল করে দেওয়া যাতে বারবার ক্লিক না পড়ে
+            const msg = document.getElementById('msg-' + videoId);
+
             btn.disabled = true;
-            btn.style.backgroundColor = "#cccccc";
+            msg.innerText = "Loading ad, please wait...";
 
-            let timeLeft = 30;
-
-            // ২. পেজের ভেতরেই কাউন্টডাউন শো করবে
-            const countdown = setInterval(function() {
-                if (timeLeft > 0) {
-                    timerDiv.innerHTML = `Please wait ${timeLeft} seconds, your video will open in Telegram shortly...`;
-                    timeLeft--;
-                } else {
-                    clearInterval(countdown);
-                    timerDiv.innerHTML = "Redirecting to Telegram...";
-                    // ৩. সময় শেষ হলে সরাসরি টেলিগ্রাম বটে ভিডিও আইডি সহ রিডাইরেক্ট হবে
+            // Monetag Rewarded Interstitial SDK কল করা হচ্ছে
+            if (typeof show_11691107 === 'function') {
+                show_11691107().then(() => {
+                    // অ্যাড সফলভাবে দেখা শেষ হলে টেলিগ্রাম বটে পাঠানো হবে
+                    msg.innerText = "Redirecting to video...";
                     window.location.href = "https://t.me/vairalvideoszarabot?start=" + videoId;
-                }
-            }, 1000);
+                }).catch((e) => {
+                    // কোনো কারণে অ্যাড লোড না হলে সরাসরি বটে পাঠানো হবে
+                    console.error("Ad error:", e);
+                    window.location.href = "https://t.me/vairalvideoszarabot?start=" + videoId;
+                });
+            } else {
+                // SDK কাজ না করলে সরাসরি বট লিংকে যাবে
+                window.location.href = "https://t.me/vairalvideoszarabot?start=" + videoId;
+            }
         }
     </script>
 
