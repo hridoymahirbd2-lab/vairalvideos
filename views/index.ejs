@@ -10,115 +10,20 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            text-align: center;
-            padding: 15px;
-            margin: 0;
-        }
-        h1 {
-            color: #fff;
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-        .banner-ad {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 10px;
-            margin: 0 auto 20px auto;
-            max-width: 320px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .banner-ad a {
-            color: #856404;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-        .post-card {
-            background: #1e1e1e;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 350px;
-            padding: 15px;
-            text-align: center;
-            box-sizing: border-box;
-            border: 1px solid #333;
-        }
-        .post-card img {
-            width: 100%;
-            border-radius: 8px;
-            height: 200px;
-            object-fit: cover;
-        }
-        .post-card h3 {
-            margin: 12px 0;
-            font-size: 16px;
-            color: #fff;
-        }
-        .progress-bar-container {
-            background: #333;
-            border-radius: 5px;
-            height: 8px;
-            width: 100%;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        .progress-bar {
-            background: #ff9800;
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .btn-unlock {
-            display: block;
-            width: 100%;
-            background-color: #ff9800;
-            color: #000;
-            padding: 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .btn-unlock:disabled {
-            background-color: #555;
-            color: #888;
-            cursor: not-allowed;
-        }
-        .btn-download {
-            display: block;
-            width: 100%;
-            background-color: #28a745;
-            color: #fff;
-            padding: 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .status-msg {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #aaa;
-        }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; text-align: center; padding: 15px; margin: 0; }
+        h1 { color: #fff; font-size: 20px; margin-bottom: 15px; }
+        .banner-ad { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 0 auto 20px auto; max-width: 320px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .banner-ad a { color: #856404; font-weight: bold; text-decoration: none; font-size: 14px; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .post-card { background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 100%; max-width: 350px; padding: 15px; text-align: center; box-sizing: border-box; border: 1px solid #333; }
+        .post-card img { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
+        .post-card h3 { margin: 12px 0; font-size: 16px; color: #fff; }
+        .progress-bar-container { background: #333; border-radius: 5px; height: 8px; width: 100%; margin: 10px 0; overflow: hidden; }
+        .progress-bar { background: #ff9800; height: 100%; width: 0%; transition: width 0.3s ease; }
+        .btn-unlock { display: block; width: 100%; background-color: #ff9800; color: #000; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; }
+        .btn-unlock:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        .btn-download { display: block; width: 100%; background-color: #28a745; color: #fff; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; text-align: center; }
+        .status-msg { margin-top: 10px; font-size: 13px; color: #aaa; }
     </style>
 </head>
 <body>
@@ -141,13 +46,13 @@
                     
                     <p style="font-size: 13px; color: #ff9800; margin: 5px 0;">▶️ Watch 3 sets of ads to unlock</p>
                     <div class="progress-bar-container">
-                        <div class="progress-bar" id="progress-<%= post.videoId %>"></div>
+                        <div class="progress-bar" id="progress-<%= post.shortCode %>"></div>
                     </div>
 
-                    <div id="btn-container-<%= post.videoId %>">
-                        <button class="btn-unlock" id="btn-<%= post.videoId %>" onclick="startMultiAdFlow('<%= post.videoId %>')">🔒 Unlock Video</button>
+                    <div id="btn-container-<%= post.shortCode %>">
+                        <button class="btn-unlock" id="btn-<%= post.shortCode %>" onclick="startMultiAdFlow('<%= post.shortCode %>')">🔒 Unlock Video</button>
                     </div>
-                    <div id="msg-<%= post.videoId %>" class="status-msg">Progress: 0/3 (Click to start)</div>
+                    <div id="msg-<%= post.shortCode %>" class="status-msg">Progress: 0/3 (Click to start)</div>
                 </div>
             <% }); %>
         <% } else { %>
@@ -160,50 +65,39 @@
     <script>
         let adProgress = {};
 
-        function startMultiAdFlow(videoId) {
-            if (!adProgress[videoId]) {
-                adProgress[videoId] = 0;
-            }
+        function startMultiAdFlow(shortCode) {
+            if (!adProgress[shortCode]) adProgress[shortCode] = 0;
 
-            const btn = document.getElementById('btn-' + videoId);
-            const msg = document.getElementById('msg-' + videoId);
-            const progressBar = document.getElementById('progress-' + videoId);
-            const container = document.getElementById('btn-container-' + videoId);
+            const btn = document.getElementById('btn-' + shortCode);
+            const msg = document.getElementById('msg-' + shortCode);
+            const progressBar = document.getElementById('progress-' + shortCode);
+            const container = document.getElementById('btn-container-' + shortCode);
 
             btn.disabled = true;
 
             function showNextAd() {
-                adProgress[videoId]++;
-                const currentStep = adProgress[videoId];
+                adProgress[shortCode]++;
+                const currentStep = adProgress[shortCode];
 
                 if (msg) msg.innerText = `Progress: ${currentStep}/3 (Watching Ad...)`;
                 if (progressBar) progressBar.style.width = (currentStep * 33.33) + '%';
 
-                const runAdSdk = () => {
-                    if (typeof show_11691107 === 'function') {
-                        show_11691107().then(() => {
-                            checkNextStep(currentStep);
-                        }).catch((e) => {
-                            console.error("Ad error:", e);
-                            checkNextStep(currentStep);
-                        });
-                    } else {
-                        checkNextStep(currentStep);
-                    }
-                };
-
-                runAdSdk();
+                if (typeof show_11691107 === 'function') {
+                    show_11691107().then(() => checkNextStep(currentStep)).catch(() => checkNextStep(currentStep));
+                } else {
+                    checkNextStep(currentStep);
+                }
             }
 
             function checkNextStep(step) {
                 if (step < 3) {
                     let timeLeft = 5;
-                    if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
+                    if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
 
                     let timer = setInterval(() => {
                         timeLeft--;
                         if (timeLeft > 0) {
-                            if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
+                            if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
                         } else {
                             clearInterval(timer);
                             showNextAd();
@@ -213,10 +107,7 @@
                     if (msg) msg.innerText = "All ads completed! Download unlocked.";
                     if (progressBar) progressBar.style.width = '100%';
 
-                    const botUsername = "onlyvpssbot"; 
-                    const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
-
-                    // সরাসরি স্ট্যান্ডার্ড <a> ট্যাগ ব্যবহার করা হলো যাতে আইডি সহ লিংক ওপেন হয়
+                    const targetUrl = `https://t.me/onlyvpssbot?start=` + shortCode;
                     container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
                 }
             }
