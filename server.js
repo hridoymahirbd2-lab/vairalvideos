@@ -23,14 +23,13 @@ app.get('/admin', (req, res) => {
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
-        postsList.unshift({ title, thumbnail, videoId });
+        postsList.unshift({ title, thumbnail, videoId: videoId.trim() });
         res.redirect('/');
     } else {
         res.send("All fields are required! <a href='/admin'>Go Back</a>");
     }
 });
 
-// টেলিগ্রাম বটের কমান্ড হ্যান্ডলার (ভিডিও পাঠানোর জন্য নিখুঁত কোড)
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -45,11 +44,11 @@ bot.on('message', (msg) => {
                 bot.sendVideo(chatId, foundPost.videoId, { 
                     caption: `🎥 Here is your video: ${foundPost.title}` 
                 }).catch((err) => {
-                    console.error("Send video error:", err);
-                    bot.sendMessage(chatId, "Sorry, failed to send the video file ID.");
+                    console.error("Telegram Send Video Error:", err);
+                    bot.sendMessage(chatId, "⚠️ Sorry, the video file ID is invalid or expired.");
                 });
             } else {
-                bot.sendMessage(chatId, "Sorry, video not found or link has expired.");
+                bot.sendMessage(chatId, "⚠️ Sorry, video not found in the database.");
             }
         }
     }
