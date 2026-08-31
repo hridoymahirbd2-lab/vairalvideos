@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG PREMIUM HUB</title>
+    <title>VAIRAL VIDEO HUB</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; text-align: center; padding: 15px; margin: 0; min-height: 100vh; display: flex; flex-direction: column;}
-        h1 { color: #fff; font-size: 20px; margin-bottom: 20px; }
+        h1 { color: #fff; font-size: 20px; margin-bottom: 15px; }
+        
+        /* Banner Ad CSS */
+        .banner-ad { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 0 auto 20px auto; max-width: 320px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .banner-ad a { color: #856404; font-weight: bold; text-decoration: none; font-size: 14px; }
+
         .content { flex: 1; }
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .post-card-link { text-decoration: none; color: inherit; display: block; width: 100%; max-width: 350px; }
@@ -21,6 +26,12 @@
 <body>
     <div class="content">
         <h1>TG PREMIUM HUB</h1>
+        
+        <!-- Banner Ad Section -->
+        <div class="banner-ad">
+            <p style="margin: 0 0 3px 0; font-size: 11px; color: #856404;">⭐ Sponsored ⭐</p>
+            <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
+        </div>
         
         <div class="container">
             <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
