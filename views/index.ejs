@@ -112,6 +112,7 @@
             cursor: pointer;
             font-size: 16px;
             box-sizing: border-box;
+            text-align: center;
         }
         .status-msg {
             margin-top: 10px;
@@ -215,19 +216,12 @@
                     const botUsername = "onlyvpssbot"; 
                     const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
-                    container.innerHTML = `<button class="btn-download" onclick="openTelegramBot('${targetUrl}')">📥 DOWNLOAD NOW</button>`;
+                    // সরাসরি স্ট্যান্ডার্ড <a> ট্যাগ ব্যবহার করা হলো যাতে আইডি সহ লিংক ওপেন হয়
+                    container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
                 }
             }
 
             showNextAd();
-        }
-
-        function openTelegramBot(url) {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink(url);
-            } else {
-                window.open(url, '_blank');
-            }
         }
     </script>
 
