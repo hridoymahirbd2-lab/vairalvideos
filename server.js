@@ -15,7 +15,6 @@ bot.on('polling_error', (error) => {});
 let postsList = []; 
 
 app.get('/', (req, res) => {
-    // ক্যাটাগরি ফিল্টারিং বাদ দিয়ে শুধু পোস্টগুলো পাঠানো হচ্ছে
     res.render('index', { posts: postsList });
 });
 
@@ -24,16 +23,16 @@ app.get('/admin', (req, res) => {
 });
 
 app.post('/add-post', (req, res) => {
-    // ক্যাটাগরি ভ্যারিয়েবল বাদ দেওয়া হয়েছে
-    const { title, thumbnail, videoId, description } = req.body;
+    const { title, thumbnail, screenshots, videoId, description } = req.body;
     
     if (title && thumbnail && videoId) {
         const shortCode = 'vid' + Math.floor(Math.random() * 1000000);
         postsList.unshift({ 
             title: title.trim(), 
             thumbnail: thumbnail.trim(), 
+            screenshots: screenshots ? screenshots.trim() : '', 
             fileId: videoId.trim(),
-            description: description ? description.trim() : '', // বিস্তারিত বিবরণ থাকছে
+            description: description ? description.trim() : '', 
             shortCode: shortCode
         });
         res.redirect('/');
@@ -63,7 +62,7 @@ bot.on('message', async (msg) => {
                 if (foundPost) {
                     await bot.sendMessage(chatId, "🎬 Sending your video, please wait...");
                     await bot.sendVideo(chatId, foundPost.fileId, { 
-                        caption: `🎥 Here is your video: ${foundPost.title}\n\n📝 Details: ${foundPost.description}` 
+                        caption: `🎥 Here is your video: ${foundPost.title}` 
                     });
                 } else {
                     await bot.sendMessage(chatId, "⚠️ Sorry, video not found.");

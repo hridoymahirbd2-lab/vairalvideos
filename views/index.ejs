@@ -18,10 +18,14 @@
         
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .post-card { background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 100%; max-width: 350px; padding: 15px; text-align: center; box-sizing: border-box; border: 1px solid #333; }
-        .post-card img { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
+        
+        .main-thumb { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
         .post-card h3 { margin: 10px 0 5px 0; font-size: 16px; color: #fff; }
         
         .post-desc { font-size: 13px; color: #b0b0b0; margin: 5px 0 12px 0; text-align: left; line-height: 1.4; word-break: break-word; }
+        
+        .screenshot-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .screenshot-container img { border-radius: 5px; height: 80px; width: 120px; object-fit: cover; flex-shrink: 0; border: 1px solid #444; }
         
         .progress-bar-container { background: #333; border-radius: 5px; height: 8px; width: 100%; margin: 10px 0; overflow: hidden; }
         .progress-bar { background: #ff9800; height: 100%; width: 0%; transition: width 0.3s ease; }
@@ -45,14 +49,26 @@
         <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
             <% posts.forEach(function(post) { %>
                 <div class="post-card">
+                    
                     <% if (post.thumbnail) { %>
-                        <img src="<%= post.thumbnail %>" alt="Screenshot">
+                        <img src="<%= post.thumbnail %>" alt="Main Thumbnail" class="main-thumb">
                     <% } %>
                     
                     <h3><%= post.title %></h3>
                     
                     <% if (post.description) { %>
                         <div class="post-desc"><%= post.description %></div>
+                    <% } %>
+
+                    <% if (post.screenshots) { %>
+                        <div class="screenshot-container">
+                            <% const screens = post.screenshots.split(','); %>
+                            <% screens.forEach(function(src) { %>
+                                <% if(src.trim()) { %>
+                                    <img src="<%= src.trim() %>" alt="Screenshot">
+                                <% } %>
+                            <% }); %>
+                        </div>
                     <% } %>
                     
                     <p style="font-size: 13px; color: #ff9800; margin: 5px 0;">▶️ Watch 3 sets of ads to unlock</p>

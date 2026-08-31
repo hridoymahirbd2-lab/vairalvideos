@@ -18,8 +18,13 @@
     <div class="form-container">
         <form action="/add-post" method="POST">
             <input type="text" name="title" placeholder="Video Title" required>
-            <input type="text" name="thumbnail" placeholder="Screenshot / Thumbnail Image URL" required>
+            
+            <input type="text" name="thumbnail" placeholder="Main Thumbnail Image URL" required>
+            
+            <input type="text" name="screenshots" placeholder="Screenshot URL (Optional, separate by comma for multiple)">
+            
             <textarea name="description" placeholder="Write video details or description here..."></textarea>
+            
             <input type="text" name="videoId" placeholder="Telegram File ID" required>
             
             <button type="submit">Upload Video</button>
