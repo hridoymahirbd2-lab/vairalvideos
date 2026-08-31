@@ -6,31 +6,54 @@
     <title>Admin Panel - Add Video</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #fff; padding: 20px; text-align: center; }
-        .form-container { background: #1e1e1e; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; border: 1px solid #333; }
-        input, textarea { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; background: #333; color: white; font-family: Arial, sans-serif; box-sizing: border-box; }
+        .form-container { background: #1e1e1e; padding: 20px; border-radius: 10px; max-width: 450px; margin: auto; border: 1px solid #333; text-align: left;}
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: none; background: #333; color: white; font-family: Arial, sans-serif; box-sizing: border-box; }
         textarea { resize: vertical; height: 80px; }
-        button { background: #ff9800; color: #000; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 90%; }
+        button { background: #ff9800; color: #000; padding: 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 15px; font-size: 16px;}
         button:hover { background: #e08b00; }
+        .id-box { background: #2a2a2a; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px dashed #555; }
+        .id-box h4 { margin: 0 0 10px 0; font-size: 15px; color: #ff9800; text-align: center;}
+        label { font-size: 13px; color: #aaa; margin-top: 10px; display: block; font-weight: bold;}
     </style>
 </head>
 <body>
-    <h2>Add New Video</h2>
+    <h2 style="text-align: center;">Add New Post</h2>
     <div class="form-container">
         <form action="/add-post" method="POST">
-            <input type="text" name="title" placeholder="Video Title" required>
             
-            <input type="text" name="thumbnail" placeholder="Main Thumbnail Image URL" required>
+            <label>Video Title (Required)</label>
+            <input type="text" name="title" placeholder="Enter video title" required>
             
-            <input type="text" name="screenshots" placeholder="Screenshot URL (Optional, separate by comma for multiple)">
+            <label>Main Thumbnail URL (Required)</label>
+            <input type="text" name="thumbnail" placeholder="URL of the main image" required>
             
-            <textarea name="description" placeholder="Write video details or description here..."></textarea>
+            <label>Screenshots (Optional)</label>
+            <input type="text" name="screenshots" placeholder="Separate multiple URLs with commas (,)">
             
-            <input type="text" name="videoId" placeholder="Telegram File ID" required>
+            <label>Description (Optional)</label>
+            <textarea name="description" placeholder="Write video details here..."></textarea>
             
-            <button type="submit">Upload Video</button>
+            <!-- ১০টা ভিডিও আইডির বক্স -->
+            <div class="id-box">
+                <h4>Telegram File IDs (Add up to 10 files)</h4>
+                <input type="text" name="videoId1" placeholder="File ID 1 (Required)" required>
+                <input type="text" name="videoId2" placeholder="File ID 2 (Optional)">
+                <input type="text" name="videoId3" placeholder="File ID 3 (Optional)">
+                <input type="text" name="videoId4" placeholder="File ID 4 (Optional)">
+                <input type="text" name="videoId5" placeholder="File ID 5 (Optional)">
+                <input type="text" name="videoId6" placeholder="File ID 6 (Optional)">
+                <input type="text" name="videoId7" placeholder="File ID 7 (Optional)">
+                <input type="text" name="videoId8" placeholder="File ID 8 (Optional)">
+                <input type="text" name="videoId9" placeholder="File ID 9 (Optional)">
+                <input type="text" name="videoId10" placeholder="File ID 10 (Optional)">
+            </div>
+            
+            <button type="submit">Upload Content</button>
         </form>
     </div>
     <br>
-    <a href="/" style="color: #ff9800; text-decoration: none;">← Go to Homepage</a>
+    <div style="text-align: center;">
+        <a href="/" style="color: #ff9800; text-decoration: none; font-weight: bold;">← Go to Homepage</a>
+    </div>
 </body>
 </html>
