@@ -1,4 +1,127 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery</title>
+
+    <script src='//libtl.com/sdk.js' data-zone='11691107' data-sdk='show_11691107'></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .banner-ad {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            margin: 0 auto 20px auto;
+            max-width: 320px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .banner-ad a {
+            color: #856404;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .post-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 300px;
+            padding: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .post-card img {
+            width: 100%;
+            border-radius: 8px;
+            height: 180px;
+            object-fit: cover;
+        }
+        .post-card h3 {
+            margin: 12px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #0088cc;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+        }
+        .btn:hover {
+            background-color: #006699;
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .status-msg {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+        .no-posts {
+            color: #777;
+            font-size: 16px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Video Gallery</h1>
+
+    <div class="banner-ad">
+        <p style="margin: 0 0 5px 0; font-size: 12px; color: #856404;">⭐ Sponsored ⭐</p>
+        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
+    </div>
+
+    <div class="container">
+        <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
+            <% posts.forEach(post => { %>
+                <div class="post-card">
+                    <% if (post.thumbnail) { %>
+                        <img src="<%= post.thumbnail %>" alt="Thumbnail">
+                    <% } %>
+                    <h3><%= post.title %></h3>
+                    <button class="btn" id="btn-<%= post.videoId %>" onclick="playAdAndRedirect('<%= post.videoId %>')">Watch Video</button>
+                    <div id="msg-<%= post.videoId %>" class="status-msg"></div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="no-posts">
+                <p>No videos available yet. <br><a href="/admin" style="color: #0088cc;">Go to Admin Panel</a> to add posts.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
         function playAdAndRedirect(videoId) {
             const btn = document.getElementById('btn-' + videoId);
             const msg = document.getElementById('msg-' + videoId);
@@ -8,11 +131,9 @@
 
             const targetUrl = "https://t.me/vairalvideoszarabot?start=" + videoId;
 
-            // রিডাইরেক্ট করার ফাংশন
             const doRedirect = () => {
                 msg.innerText = "Opening video in Telegram...";
                 if (window.Telegram && window.Telegram.WebApp) {
-                    // টেলিগ্রাম মিনি অ্যাপ বন্ধ করে সরাসরি বটে পাঠিয়ে দেবে
                     window.Telegram.WebApp.openTelegramLink(targetUrl);
                     setTimeout(() => {
                         window.Telegram.WebApp.close();
@@ -27,10 +148,13 @@
                     doRedirect();
                 }).catch((e) => {
                     console.error("Ad error:", e);
-                    doRedirect(); // অ্যাড স্কিপ বা এরর হলেও যেন ভিডিও মিস না হয়
+                    doRedirect();
                 });
             } else {
                 doRedirect();
             }
         }
     </script>
+
+</body>
+</html>
