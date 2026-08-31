@@ -1,5 +1,44 @@
-// আপনার server.js ফাইলের বট হ্যান্ডলার অংশটি হুবহু এই কোড দিয়ে আপডেট করুন:
+const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
+const app = express();
 
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static('public'));
+
+const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
+const bot = new TelegramBot(token, { polling: true });
+
+bot.on('polling_error', (error) => {
+    // পোলিং এরর ইগনোর করবে
+});
+
+let postsList = [];
+
+app.get('/', (req, res) => {
+    res.render('index', { posts: postsList });
+});
+
+app.get('/admin', (req, res) => {
+    res.render('admin');
+});
+
+app.post('/add-post', (req, res) => {
+    const { title, thumbnail, videoId } = req.body;
+    if (title && thumbnail && videoId) {
+        postsList.unshift({ 
+            title: title.trim(), 
+            thumbnail: thumbnail.trim(), 
+            videoId: videoId.trim() 
+        });
+        res.redirect('/');
+    } else {
+        res.send("All fields are required! <a href='/admin'>Go Back</a>");
+    }
+});
+
+// ১০০% নির্ভুল টেলিগ্রাম বট হ্যান্ডলার ও ইনলাইন বাটন সিস্টেম
 bot.on('message', async (msg) => {
     try {
         const chatId = msg.chat.id;
@@ -12,7 +51,6 @@ bot.on('message', async (msg) => {
                 const foundPost = postsList.find(p => p.videoId === requestedId);
 
                 if (foundPost) {
-                    // সরাসরি ভিডিও সেন্ড করার বদলে ইনলাইন বাটন দিয়ে পাঠানো, যাতে টেলিগ্রাম ব্লক না করে
                     await bot.sendMessage(chatId, `🎥 Click the button below to get your video: "${foundPost.title}"`, {
                         reply_markup: {
                             inline_keyboard: [
@@ -32,7 +70,7 @@ bot.on('message', async (msg) => {
     }
 });
 
-// যখন ইউজার বাটনএ ক্লিক করবে, তখন ইনস্ট্যান্ট ভিডিও চলে যাবে
+// বাটন ক্লিক হ্যান্ডলার
 bot.on('callback_query', async (callbackQuery) => {
     try {
         const msg = callbackQuery.message;
@@ -52,9 +90,12 @@ bot.on('callback_query', async (callbackQuery) => {
                 await bot.answerCallbackQuery(callbackQuery.id, { text: "Video not found!" });
             }
         }
-    } else {
-        // Safe fallback for callback handling
     } catch (err) {
         console.error("Callback Error:", err.message);
     }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
