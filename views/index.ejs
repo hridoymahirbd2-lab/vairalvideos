@@ -137,7 +137,6 @@
     </div>
 
     <script>
-        // প্রতিটা পোস্টের জন্য বর্তমান অ্যাড কাউন্ট ট্র্যাক করার অবজেক্ট
         let adProgress = {};
 
         function startMultiAdFlow(videoId) {
@@ -152,7 +151,6 @@
 
             btn.disabled = true;
 
-            // একটি করে অ্যাড দেখানোর ফাংশন
             function showNextAd() {
                 adProgress[videoId]++;
                 const currentStep = adProgress[videoId];
@@ -166,7 +164,7 @@
                             checkNextStep(currentStep);
                         }).catch((e) => {
                             console.error("Ad error:", e);
-                            checkNextStep(currentStep); // কোনো কারণে অ্যাড ফেইল করলেও যেন ইউজার আটকে না যায়
+                            checkNextStep(currentStep);
                         });
                     } else {
                         checkNextStep(currentStep);
@@ -178,7 +176,6 @@
 
             function checkNextStep(step) {
                 if (step < 3) {
-                    // ৫ সেকেন্ড ব্রেক বা ওয়েটিং টাইম
                     let timeLeft = 5;
                     if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
 
@@ -188,27 +185,30 @@
                             if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
                         } else {
                             clearInterval(timer);
-                            showNextAd(); // পরবর্তী অ্যাড শুরু হবে
+                            showNextAd();
                         }
                     }, 1000);
                 } else {
-                    // ৩টি অ্যাড কমপ্লিট! এখন ডাউনলোড বাটন আসবে
                     if (msg) msg.innerText = "All ads completed! Download unlocked.";
                     if (progressBar) progressBar.style.width = '100%';
 
                     const botUsername = "vairalvideoszarabot"; 
                     const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
-                    container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
-
-                    if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.openTelegramLink(targetUrl);
-                    }
+                    // টেলিগ্রাম মিনি অ্যাপ এবং ব্রাউজার উভය ক্ষেত্রে ১০০% কাজ করার জন্য নিরাপদ ফাংশন যুক্ত করা হলো
+                    container.innerHTML = `<button class="btn-download" onclick="openTelegramBot('${targetUrl}')">📥 DOWNLOAD NOW</button>`;
                 }
             }
 
-            // প্রথম অ্যাড কল করা হলো
             showNextAd();
+        }
+
+        function openTelegramBot(url) {
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.openTelegramLink(url);
+            } else {
+                window.open(url, '_blank');
+            }
         }
     </script>
 

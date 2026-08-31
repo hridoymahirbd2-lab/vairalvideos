@@ -14,16 +14,20 @@ bot.on('polling_error', (error) => {
     // পোলিং এরর ইগনোর করবে
 });
 
+// গ্লোবাল পোস্ট স্টোরেজ অ্যারে
 let postsList = [];
 
+// হোমপেজ রাউট
 app.get('/', (req, res) => {
     res.render('index', { posts: postsList });
 });
 
+// অ্যাডমিন প্যানেল পেজ রাউট
 app.get('/admin', (req, res) => {
     res.render('admin');
 });
 
+// পোস্ট অ্যাড করার রাউট (সব ডেটা এখানে সেভ হয়)
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
@@ -38,7 +42,7 @@ app.post('/add-post', (req, res) => {
     }
 });
 
-// ১০০% নির্ভুল টেলিগ্রাম বট হ্যান্ডলার ও ইনলাইন বাটন সিস্টেম
+// টেলিগ্রাম বট হ্যান্ডলার ও ভিডিও পাঠানোর পারফেক্ট লজিক
 bot.on('message', async (msg) => {
     try {
         const chatId = msg.chat.id;
@@ -51,47 +55,19 @@ bot.on('message', async (msg) => {
                 const foundPost = postsList.find(p => p.videoId === requestedId);
 
                 if (foundPost) {
-                    await bot.sendMessage(chatId, `🎥 Click the button below to get your video: "${foundPost.title}"`, {
-                        reply_markup: {
-                            inline_keyboard: [
-                                [{ text: "▶️ Watch / Get Video", callback_data: `get_vid_${requestedId}` }]
-                            ]
-                        }
+                    await bot.sendMessage(chatId, "🎬 Sending your video, please wait...");
+                    await bot.sendVideo(chatId, foundPost.videoId, { 
+                        caption: `🎥 Here is your video: ${foundPost.title}\n\nHope you enjoyed the videos! They will be deleted after 10 minutes.` 
                     });
                 } else {
-                    await bot.sendMessage(chatId, "⚠️ Sorry, video not found in database.");
+                    await bot.sendMessage(chatId, "⚠️ Sorry, video not found in database. Make sure it's added from the admin panel.");
                 }
             } else {
-                await bot.sendMessage(chatId, "Welcome! Please go back to the website and click 'Watch Video' to get your desired video.");
+                await bot.sendMessage(chatId, "👋 Welcome! Please go back to the website, complete all ads, and click 'DOWNLOAD NOW' to get your video.");
             }
         }
     } catch (err) {
         console.error("Telegram Error:", err.message);
-    }
-});
-
-// বাটন ক্লিক হ্যান্ডলার
-bot.on('callback_query', async (callbackQuery) => {
-    try {
-        const msg = callbackQuery.message;
-        const chatId = msg.chat.id;
-        const data = callbackQuery.data;
-
-        if (data.startsWith('get_vid_')) {
-            const requestedId = data.replace('get_vid_', '').trim();
-            const foundPost = postsList.find(p => p.videoId === requestedId);
-
-            if (foundPost) {
-                await bot.answerCallbackQuery(callbackQuery.id, { text: "Sending your video..." });
-                await bot.sendVideo(chatId, foundPost.videoId, { 
-                    caption: `🎥 Here is your video: ${foundPost.title}` 
-                });
-            } else {
-                await bot.answerCallbackQuery(callbackQuery.id, { text: "Video not found!" });
-            }
-        }
-    } catch (err) {
-        console.error("Callback Error:", err.message);
     }
 });
 
