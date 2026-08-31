@@ -5,41 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TG PREMIUM HUB</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; text-align: center; padding: 15px; margin: 0; }
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; text-align: center; padding: 15px; margin: 0; min-height: 100vh; display: flex; flex-direction: column;}
         h1 { color: #fff; font-size: 20px; margin-bottom: 20px; }
+        .content { flex: 1; }
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        
-        /* লিংকের স্টাইল */
         .post-card-link { text-decoration: none; color: inherit; display: block; width: 100%; max-width: 350px; }
-        
         .post-card { background: #1e1e1e; border-radius: 12px; padding: 15px; box-sizing: border-box; border: 1px solid #333; transition: 0.3s; }
         .post-card:hover { border-color: #ff9800; }
-        
         .main-thumb { width: 100%; border-radius: 8px; height: 220px; object-fit: cover; }
         .post-card h3 { margin: 15px 0 5px 0; font-size: 16px; color: #fff; line-height: 1.4; }
+        
+        .visitor-counter { margin-top: 40px; padding: 15px; background: #1a1a1a; border-top: 1px solid #333; font-size: 14px; color: #ff9800; font-weight: bold; border-radius: 8px;}
     </style>
 </head>
 <body>
-    <h1>TG PREMIUM HUB</h1>
-    
-    <div class="container">
-        <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
-            <% posts.forEach(function(post) { %>
-                <!-- পুরো কার্ডটিকে একটি লিংক বানানো হয়েছে, ক্লিক করলেই পরের পেজে যাবে -->
-                <a href="/video/<%= post.shortCode %>" class="post-card-link">
-                    <div class="post-card">
-                        <% if (post.thumbnail) { %>
-                            <img src="<%= post.thumbnail %>" alt="Thumbnail" class="main-thumb">
-                        <% } %>
-                        <h3><%= post.title %></h3>
-                    </div>
-                </a>
-            <% }); %>
-        <% } else { %>
-            <div style="color: #aaa; margin-top: 30px;">
-                <p>No videos available yet.<br><a href="/admin" style="color: #ff9800;">Go to Admin</a></p>
-            </div>
-        <% } %>
+    <div class="content">
+        <h1>TG PREMIUM HUB</h1>
+        
+        <div class="container">
+            <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+                <% posts.forEach(function(post) { %>
+                    <a href="/video/<%= post.shortCode %>" class="post-card-link">
+                        <div class="post-card">
+                            <% if (post.thumbnail) { %>
+                                <img src="<%= post.thumbnail %>" alt="Thumbnail" class="main-thumb">
+                            <% } %>
+                            <h3><%= post.title %></h3>
+                        </div>
+                    </a>
+                <% }); %>
+            <% } else { %>
+                <div style="color: #aaa; margin-top: 30px;">
+                    <p>No videos available yet.<br><a href="/admin" style="color: #ff9800;">Go to Admin</a></p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ওয়েবসাইটের সবার নিচে টোটাল ভিজিটর কাউন্টার -->
+    <div class="visitor-counter">
+        👥 Total Site Visitors: <%= typeof totalVisitors !== 'undefined' ? totalVisitors : 0 %>
     </div>
 </body>
 </html>

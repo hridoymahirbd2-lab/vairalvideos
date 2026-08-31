@@ -13,12 +13,18 @@
         .back-btn { align-self: flex-start; color: #ff9800; text-decoration: none; font-size: 16px; margin-bottom: 20px; font-weight: bold; }
         .video-details-box { background: #1e1e1e; border-radius: 12px; padding: 20px; width: 100%; max-width: 400px; box-sizing: border-box; border: 1px solid #333; text-align: left; }
         
-        h2 { font-size: 18px; margin-top: 0; line-height: 1.4; color: #fff; text-align: center; }
+        h2 { font-size: 18px; margin-top: 0; line-height: 1.4; color: #fff; text-align: center; margin-bottom: 15px;}
+        
+        /* Stats (Views & Likes) Styles */
+        .stats-container { display: flex; justify-content: space-between; align-items: center; background: #2a2a2a; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; }
+        .stat-item { font-size: 14px; font-weight: bold; color: #ccc; display: flex; align-items: center; gap: 5px; }
+        .btn-like { background: none; border: 1px solid #ff4757; color: #ff4757; font-size: 14px; font-weight: bold; padding: 6px 12px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-like:hover { background: #ff4757; color: #fff; }
+
         .post-desc { font-size: 14px; color: #ddd; margin: 15px 0; line-height: 1.6; white-space: pre-wrap; background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; }
         
         .section-title { font-size: 16px; color: #ff9800; margin: 25px 0 15px 0; border-bottom: 1px solid #444; padding-bottom: 5px; text-align: center; }
         
-        /* স্ক্রিনশট লম্বাভাবে (নিচে নিচে) দেখানোর কোড */
         .vertical-screenshots { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
         .vertical-screenshots img { width: 100%; border-radius: 8px; border: 1px solid #444; object-fit: cover; }
         
@@ -37,15 +43,20 @@
     <a href="/" class="back-btn">← Back to Home</a>
 
     <div class="video-details-box">
-        <!-- Video Title -->
         <h2><%= post.title %></h2>
         
-        <!-- Description -->
+        <!-- Views & Love Reaction -->
+        <div class="stats-container">
+            <div class="stat-item">👁️ <%= post.views %> Views</div>
+            <button class="btn-like" onclick="sendLike('<%= post.shortCode %>', this)">
+                ❤️ <span id="like-count"><%= post.likes %></span>
+            </button>
+        </div>
+        
         <% if (post.description) { %>
             <div class="post-desc"><%= post.description %></div>
         <% } %>
 
-        <!-- Screenshots (Vertical / লম্বাভাবে) -->
         <% if (post.screenshots) { %>
             <div class="section-title">Screenshots</div>
             <div class="vertical-screenshots">
@@ -58,7 +69,6 @@
             </div>
         <% } %>
 
-        <!-- Unlock Section at the bottom -->
         <div class="unlock-section">
             <p style="font-size: 14px; color: #ff9800; margin: 0; font-weight: bold;">▶️ Watch 3 sets of ads to unlock</p>
             
@@ -75,6 +85,22 @@
     </div>
 
     <script>
+        // লাভ রিয়েকশন পাঠানোর ফাংশন
+        function sendLike(shortCode, btnElement) {
+            btnElement.disabled = true; // যেন একসাথে অনেকবার ক্লিক করতে না পারে
+            btnElement.style.background = "#ff4757";
+            btnElement.style.color = "#fff";
+
+            fetch('/like/' + shortCode, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('like-count').innerText = data.likes;
+                }
+            })
+            .catch(err => console.log(err));
+        }
+
         let adProgress = 0;
 
         function startMultiAdFlow(shortCode) {

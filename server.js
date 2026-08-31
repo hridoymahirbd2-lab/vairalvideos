@@ -12,18 +12,33 @@ const bot = new TelegramBot(token, { polling: true });
 bot.on('polling_error', (error) => {});
 
 let postsList = []; 
+let totalVisitors = 0; // ওয়েবসাইটের টোটাল ভিজিটর ট্র্যাক করার জন্য
 
 app.get('/', (req, res) => {
-    res.render('index', { posts: postsList });
+    totalVisitors++; // হোমপেজ লোড হলেই ভিজিটর ১ করে বাড়বে
+    res.render('index', { posts: postsList, totalVisitors: totalVisitors });
 });
 
 app.get('/video/:shortCode', (req, res) => {
     const shortCode = req.params.shortCode;
     const post = postsList.find(p => p.shortCode === shortCode);
     if (post) {
+        post.views++; // ভিডিও পেজে ঢুকলেই ভিউ ১ করে বাড়বে
         res.render('video', { post: post });
     } else {
         res.send("Video not found! <a href='/'>Go Home</a>");
+    }
+});
+
+// লাইক/লাভ রিয়েকশন কাউন্ট করার API
+app.post('/like/:shortCode', (req, res) => {
+    const shortCode = req.params.shortCode;
+    const post = postsList.find(p => p.shortCode === shortCode);
+    if (post) {
+        post.likes++;
+        res.json({ success: true, likes: post.likes });
+    } else {
+        res.json({ success: false });
     }
 });
 
@@ -48,7 +63,9 @@ app.post('/add-post', (req, res) => {
             screenshots: screenshots ? screenshots.trim() : '', 
             fileIds: fileIds, 
             description: description ? description.trim() : '', 
-            shortCode: shortCode
+            shortCode: shortCode,
+            views: 0, // নতুন পোস্টের ভিউ 0
+            likes: 0  // নতুন পোস্টের লাইক 0
         });
         res.redirect('/');
     } else {
@@ -95,14 +112,11 @@ bot.on('message', async (msg) => {
                             }
                         }
 
-                        // ১ ঘণ্টা (৩৬০০০০০ মিলি-সেকেন্ড) পর মেসেজ ডিলিট করার ফাংশন
                         if (sentMsg) {
                             setTimeout(async () => {
                                 try {
                                     await bot.deleteMessage(chatId, sentMsg.message_id);
-                                } catch (e) {
-                                    console.error("Delete Error:", e.message);
-                                }
+                                } catch (e) {}
                             }, 3600000); 
                         }
                     }
