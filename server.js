@@ -11,13 +11,18 @@ app.use(express.static('public'));
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 const bot = new TelegramBot(token, { polling: true });
 
-// পার্মানেন্ট ব্যাকআপের জন্য গ্লোবাল অবজেক্ট
+// নিরাপদ গ্লোবাল অ্যারে
 if (!global.savedPosts) {
     global.savedPosts = [];
 }
 
 app.get('/', (req, res) => {
-    res.render('index', { posts: global.savedPosts });
+    try {
+        res.render('index', { posts: global.savedPosts || [] });
+    } catch (err) {
+        console.error("Render error:", err);
+        res.send("Error loading page: " + err.message);
+    }
 });
 
 app.get('/admin', (req, res) => {
@@ -27,30 +32,9 @@ app.get('/admin', (req, res) => {
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
-        // নতুন পোস্ট সবার উপরে যুক্ত হবে
         global.savedPosts.unshift({ title, thumbnail, videoId });
-        
-        res.send(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>Success</title>
-                <style>
-                    body { font-family: Arial; background: #f4f4f9; padding: 50px; text-align: center; }
-                    .box { background: white; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-                    a { display: inline-block; margin-top: 15px; background: #0088cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-                </style>
-            </head>
-            <body>
-                <div class="box">
-                    <h2 style="color: green;">Post Published Successfully!</h2>
-                    <p>Your video has been added to the gallery.</p>
-                    <a href="/">Go to Homepage</a> | <a href="/admin">Add More</a>
-                </div>
-            </body>
-            </html>
-        `);
+        // পোস্ট সফল হওয়ার পর সরাসরি হোমপেজে রিডাইরেক্ট করে দেওয়া হলো, এতে আর ফাঁকা পেজ বা ঝামেলা থাকবে না
+        res.redirect('/');
     } else {
         res.send("All fields are required! <a href='/admin'>Go Back</a>");
     }
