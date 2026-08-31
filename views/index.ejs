@@ -21,7 +21,6 @@
             color: #333;
             margin-bottom: 10px;
         }
-        /* ফিক্সড ব্যানার অ্যাড স্টাইল (সরাসরি ওপরে থাকবে) */
         .banner-ad {
             background: #fff3cd;
             border: 1px solid #ffeeba;
@@ -84,9 +83,9 @@
             cursor: not-allowed;
         }
         .status-msg {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #666;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
         }
         .no-posts {
             color: #777;
@@ -99,7 +98,6 @@
 
     <h1>Video Gallery</h1>
 
-    <!-- হোমপেজের ফিক্সড ব্যানার অ্যাড -->
     <div class="banner-ad">
         <p style="margin: 0 0 3px 0; font-size: 11px; color: #856404;">⭐ Sponsored ⭐</p>
         <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
@@ -132,18 +130,15 @@
             if (btn) btn.disabled = true;
             if (msg) msg.innerText = "Loading ad, please wait...";
 
-            const botUsername = "vairalvideoszarabot"; // আপনার টেলিগ্রাম বটের ইউজারনেম
+            const botUsername = "vairalvideoszarabot"; 
             const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
             const doRedirect = () => {
-                if (msg) msg.innerText = "Opening video in Telegram...";
+                if (msg) {
+                    msg.innerHTML = `✅ Ad finished! <br><a href="${targetUrl}" target="_blank" style="color: #0088cc; font-weight: bold; font-size: 15px; text-decoration: underline;">👉 Click Here to Get Video</a>`;
+                }
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.openTelegramLink(targetUrl);
-                    setTimeout(() => {
-                        window.Telegram.WebApp.close();
-                    }, 500);
-                } else {
-                    window.location.href = targetUrl;
                 }
             };
 
@@ -152,7 +147,7 @@
                     doRedirect();
                 }).catch((e) => {
                     console.error("Ad error:", e);
-                    doRedirect(); // অ্যাড কোনো কারণে স্কিপ হলেও যেন ভিডিও মিস না হয়
+                    doRedirect();
                 });
             } else {
                 doRedirect();
