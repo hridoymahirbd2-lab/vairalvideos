@@ -11,32 +11,41 @@ app.use(express.static('public'));
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 const bot = new TelegramBot(token, { polling: true });
 
-// নিরাপদ গ্লোবাল অ্যারে
+// গ্লোবাল সেফ পোস্ট অ্যারে
 if (!global.savedPosts) {
     global.savedPosts = [];
 }
 
 app.get('/', (req, res) => {
     try {
-        res.render('index', { posts: global.savedPosts || [] });
+        res.render('index', { posts: global.savedPosts });
     } catch (err) {
-        console.error("Render error:", err);
-        res.send("Error loading page: " + err.message);
+        console.error("Index render error:", err);
+        res.send("An error occurred while loading the gallery.");
     }
 });
 
 app.get('/admin', (req, res) => {
-    res.render('admin');
+    try {
+        res.render('admin');
+    } catch (err) {
+        console.error("Admin render error:", err);
+        res.send("Admin panel loading error.");
+    }
 });
 
 app.post('/add-post', (req, res) => {
-    const { title, thumbnail, videoId } = req.body;
-    if (title && thumbnail && videoId) {
-        global.savedPosts.unshift({ title, thumbnail, videoId });
-        // পোস্ট সফল হওয়ার পর সরাসরি হোমপেজে রিডাইরেক্ট করে দেওয়া হলো, এতে আর ফাঁকা পেজ বা ঝামেলা থাকবে না
-        res.redirect('/');
-    } else {
-        res.send("All fields are required! <a href='/admin'>Go Back</a>");
+    try {
+        const { title, thumbnail, videoId } = req.body;
+        if (title && thumbnail && videoId) {
+            global.savedPosts.unshift({ title, thumbnail, videoId });
+            res.redirect('/');
+        } else {
+            res.send("All fields are required! <a href='/admin'>Go Back</a>");
+        }
+    } catch (err) {
+        console.error("Add post error:", err);
+        res.send("Failed to add post. <a href='/admin'>Try Again</a>");
     }
 });
 
