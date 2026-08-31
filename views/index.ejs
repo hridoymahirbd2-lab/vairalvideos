@@ -23,6 +23,21 @@
             font-size: 20px;
             margin-bottom: 15px;
         }
+        .banner-ad {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            margin: 0 auto 20px auto;
+            max-width: 320px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .banner-ad a {
+            color: #856404;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+        }
         .container {
             display: flex;
             flex-wrap: wrap;
@@ -109,6 +124,11 @@
 
     <h1>TG PREMIUM - VIRAL HUB</h1>
 
+    <div class="banner-ad">
+        <p style="margin: 0 0 3px 0; font-size: 11px; color: #856404;">⭐ Sponsored ⭐</p>
+        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
+    </div>
+
     <div class="container">
         <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
             <% posts.forEach(function(post) { %>
@@ -192,10 +212,9 @@
                     if (msg) msg.innerText = "All ads completed! Download unlocked.";
                     if (progressBar) progressBar.style.width = '100%';
 
-                    const botUsername = "vairalvideoszarabot"; 
+                    const botUsername = "onlyvpssbot"; 
                     const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
-                    // টেলিগ্রাম মিনি অ্যাপ এবং ব্রাউজার উভය ক্ষেত্রে ১০০% কাজ করার জন্য নিরাপদ ফাংশন যুক্ত করা হলো
                     container.innerHTML = `<button class="btn-download" onclick="openTelegramBot('${targetUrl}')">📥 DOWNLOAD NOW</button>`;
                 }
             }
