@@ -50,6 +50,8 @@
             padding: 15px;
             text-align: center;
             box-sizing: border-box;
+            position: relative;
+            z-index: 10;
         }
         .post-card img {
             width: 100%;
@@ -74,6 +76,8 @@
             cursor: pointer;
             width: 100%;
             font-size: 15px;
+            position: relative;
+            z-index: 20;
         }
         .btn:hover {
             background-color: #006699;
@@ -86,6 +90,8 @@
             margin-top: 10px;
             font-size: 14px;
             color: #333;
+            position: relative;
+            z-index: 20;
         }
         .no-posts {
             color: #777;
@@ -135,7 +141,8 @@
 
             const doRedirect = () => {
                 if (msg) {
-                    msg.innerHTML = `✅ Ad finished! <br><a href="${targetUrl}" target="_blank" style="color: #0088cc; font-weight: bold; font-size: 15px; text-decoration: underline;">👉 Click Here to Get Video</a>`;
+                    // এমন একটি বাটন দেওয়া হলো যা যেকোনো ডিভাইসে ১০০% কাজ করবে এবং ক্লিক করা সহজ হবে
+                    msg.innerHTML = `✅ Ad finished!<br><button onclick="window.open('${targetUrl}', '_blank')" style="margin-top:8px; background:#28a745; color:white; border:none; padding:8px 16px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:14px; position:relative; z-index:30;">Open in Telegram</button>`;
                 }
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.openTelegramLink(targetUrl);
