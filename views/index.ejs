@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Gallery</title>
+    <title>TG PREMIUM</title>
 
     <!-- Monetag Rewarded SDK -->
     <script src='//libtl.com/sdk.js' data-zone='11691107' data-sdk='show_11691107'></script>
@@ -12,29 +12,16 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #121212;
+            color: #ffffff;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             margin: 0;
         }
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .banner-ad {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 10px;
-            margin: 0 auto 20px auto;
-            max-width: 320px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .banner-ad a {
-            color: #856404;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 14px;
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 15px;
         }
         .container {
             display: flex;
@@ -43,75 +30,66 @@
             gap: 20px;
         }
         .post-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 300px;
+            background: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 350px;
             padding: 15px;
             text-align: center;
             box-sizing: border-box;
+            border: 1px solid #333;
         }
         .post-card img {
             width: 100%;
             border-radius: 8px;
-            height: 180px;
+            height: 200px;
             object-fit: cover;
         }
         .post-card h3 {
             margin: 12px 0;
-            font-size: 18px;
-            color: #333;
+            font-size: 16px;
+            color: #fff;
         }
-        .btn {
-            display: inline-block;
-            background-color: #0088cc;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
+        .btn-unlock {
+            display: block;
+            width: 100%;
+            background-color: #ff9800;
+            color: #000;
+            padding: 14px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
             border: none;
             cursor: pointer;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+        .btn-download {
+            display: block;
             width: 100%;
-            font-size: 15px;
-        }
-        .btn:hover {
-            background-color: #006699;
-        }
-        .btn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
+            background-color: #28a745;
+            color: #fff;
+            padding: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            box-sizing: border-box;
         }
         .status-msg {
             margin-top: 10px;
-            font-size: 14px;
-        }
-        .telegram-link-btn {
-            display: inline-block;
-            margin-top: 8px;
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .no-posts {
-            color: #777;
-            font-size: 16px;
-            margin-top: 30px;
+            font-size: 13px;
+            color: #aaa;
         }
     </style>
 </head>
 <body>
 
-    <h1>Video Gallery</h1>
-
-    <div class="banner-ad">
-        <p style="margin: 0 0 3px 0; font-size: 11px; color: #856404;">⭐ Sponsored ⭐</p>
-        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
-    </div>
+    <h1>TG PREMIUM - VIRAL HUB</h1>
 
     <div class="container">
         <% if (typeof posts !== 'undefined' && posts && posts.length > 0) { %>
@@ -121,44 +99,50 @@
                         <img src="<%= post.thumbnail %>" alt="Thumbnail">
                     <% } %>
                     <h3><%= post.title %></h3>
-                    <button class="btn" id="btn-<%= post.videoId %>" onclick="playAdAndWatch('<%= post.videoId %>')">Watch Video</button>
-                    <div id="msg-<%= post.videoId %>" class="status-msg"></div>
+                    
+                    <!-- ডায়নামিক বাটন যা অ্যাড দেখার পর DOWNLOAD NOW এ রূপ নেবে -->
+                    <div id="btn-container-<%= post.videoId %>">
+                        <button class="btn-unlock" id="btn-<%= post.videoId %>" onclick="watchAdsAndUnlock('<%= post.videoId %>')">🔒 Unlock Video</button>
+                    </div>
+                    <div id="msg-<%= post.videoId %>" class="status-msg">Click Unlock Video to watch ads.</div>
                 </div>
             <% }); %>
         <% } else { %>
-            <div class="no-posts">
-                <p>No videos available yet. <br><a href="/admin" style="color: #0088cc;">Go to Admin Panel</a> to add posts.</p>
+            <div style="color: #aaa; margin-top: 30px;">
+                <p>No videos available yet. <br><a href="/admin" style="color: #ff9800;">Go to Admin Panel</a> to add posts.</p>
             </div>
         <% } %>
     </div>
 
     <script>
-        function playAdAndWatch(videoId) {
-            const btn = document.getElementById('btn-' + videoId);
+        function watchAdsAndUnlock(videoId) {
+            const container = document.getElementById('btn-container-' + videoId);
             const msg = document.getElementById('msg-' + videoId);
 
-            if (btn) btn.disabled = true;
-            if (msg) msg.innerText = "Loading ad, please wait...";
+            if (msg) msg.innerText = "Loading ad, please watch completely...";
 
             const botUsername = "vairalvideoszarabot"; 
             const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
-            const showLink = () => {
-                if (msg) {
-                    // সরাসরি স্ট্যান্ডার্ড <a> ট্যাগ ব্যবহার করা হলো, যা কোনো ব্রাউজার ব্লক করতে পারবে না
-                    msg.innerHTML = `✅ Ad finished!<br><a href="${targetUrl}" class="telegram-link-btn" target="_blank">Open in Telegram</a>`;
+            const unlockAction = () => {
+                if (msg) msg.innerText = "All ads completed! Download unlocked.";
+                // ঠিক অন্য বোর্ডের সাইটের মতো সবুজ রঙের DOWNLOAD NOW বাটন তৈরি করা হলো
+                container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
+                
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.openTelegramLink(targetUrl);
                 }
             };
 
             if (typeof show_11691107 === 'function') {
                 show_11691107().then(() => {
-                    showLink();
+                    unlockAction();
                 }).catch((e) => {
                     console.error("Ad error:", e);
-                    showLink();
+                    unlockAction(); // অ্যাড কোনো কারণে ফেইল করলেও যেন ইউজারের প্রবলেম না হয়
                 });
             } else {
-                showLink();
+                unlockAction();
             }
         }
     </script>
