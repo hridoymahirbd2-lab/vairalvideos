@@ -5,6 +5,7 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static('public'));
 
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
@@ -17,7 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-    res.render('admin'); // আলাদা ejs ফাইল রেন্ডার করবে
+    res.render('admin');
 });
 
 app.post('/add-post', (req, res) => {
