@@ -10,15 +10,24 @@ app.use(express.static('public'));
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 const bot = new TelegramBot(token, { polling: true });
 
-// ডেটা সেভ রাখার গ্লোবাল অ্যারে
 let postsList = [];
 
 app.get('/', (req, res) => {
-    res.render('index', { posts: postsList });
+    try {
+        res.render('index', { posts: postsList });
+    } catch (err) {
+        console.error("View Render Error:", err.message);
+        res.status(500).send("Template Error: " + err.message);
+    }
 });
 
 app.get('/admin', (req, res) => {
-    res.render('admin');
+    try {
+        res.render('admin');
+    } catch (err) {
+        console.error("Admin Render Error:", err.message);
+        res.status(500).send("Admin Template Error: " + err.message);
+    }
 });
 
 app.post('/add-post', (req, res) => {
