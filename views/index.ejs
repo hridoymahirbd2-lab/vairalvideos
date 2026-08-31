@@ -51,6 +51,20 @@
             font-size: 16px;
             color: #fff;
         }
+        .progress-bar-container {
+            background: #333;
+            border-radius: 5px;
+            height: 8px;
+            width: 100%;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: #ff9800;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
         .btn-unlock {
             display: block;
             width: 100%;
@@ -64,7 +78,11 @@
             cursor: pointer;
             font-size: 16px;
             box-sizing: border-box;
-            transition: 0.2s;
+        }
+        .btn-unlock:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
         }
         .btn-download {
             display: block;
@@ -100,11 +118,15 @@
                     <% } %>
                     <h3><%= post.title %></h3>
                     
-                    <!-- ডায়নামিক বাটন যা অ্যাড দেখার পর DOWNLOAD NOW এ রূপ নেবে -->
-                    <div id="btn-container-<%= post.videoId %>">
-                        <button class="btn-unlock" id="btn-<%= post.videoId %>" onclick="watchAdsAndUnlock('<%= post.videoId %>')">🔒 Unlock Video</button>
+                    <p style="font-size: 13px; color: #ff9800; margin: 5px 0;">▶️ Watch 3 sets of ads to unlock</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-<%= post.videoId %>"></div>
                     </div>
-                    <div id="msg-<%= post.videoId %>" class="status-msg">Click Unlock Video to watch ads.</div>
+
+                    <div id="btn-container-<%= post.videoId %>">
+                        <button class="btn-unlock" id="btn-<%= post.videoId %>" onclick="startMultiAdFlow('<%= post.videoId %>')">🔒 Unlock Video</button>
+                    </div>
+                    <div id="msg-<%= post.videoId %>" class="status-msg">Progress: 0/3 (Click to start)</div>
                 </div>
             <% }); %>
         <% } else { %>
@@ -115,35 +137,78 @@
     </div>
 
     <script>
-        function watchAdsAndUnlock(videoId) {
-            const container = document.getElementById('btn-container-' + videoId);
-            const msg = document.getElementById('msg-' + videoId);
+        // প্রতিটা পোস্টের জন্য বর্তমান অ্যাড কাউন্ট ট্র্যাক করার অবজেক্ট
+        let adProgress = {};
 
-            if (msg) msg.innerText = "Loading ad, please watch completely...";
-
-            const botUsername = "vairalvideoszarabot"; 
-            const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
-
-            const unlockAction = () => {
-                if (msg) msg.innerText = "All ads completed! Download unlocked.";
-                // ঠিক অন্য বোর্ডের সাইটের মতো সবুজ রঙের DOWNLOAD NOW বাটন তৈরি করা হলো
-                container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
-                
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.openTelegramLink(targetUrl);
-                }
-            };
-
-            if (typeof show_11691107 === 'function') {
-                show_11691107().then(() => {
-                    unlockAction();
-                }).catch((e) => {
-                    console.error("Ad error:", e);
-                    unlockAction(); // অ্যাড কোনো কারণে ফেইল করলেও যেন ইউজারের প্রবলেম না হয়
-                });
-            } else {
-                unlockAction();
+        function startMultiAdFlow(videoId) {
+            if (!adProgress[videoId]) {
+                adProgress[videoId] = 0;
             }
+
+            const btn = document.getElementById('btn-' + videoId);
+            const msg = document.getElementById('msg-' + videoId);
+            const progressBar = document.getElementById('progress-' + videoId);
+            const container = document.getElementById('btn-container-' + videoId);
+
+            btn.disabled = true;
+
+            // একটি করে অ্যাড দেখানোর ফাংশন
+            function showNextAd() {
+                adProgress[videoId]++;
+                const currentStep = adProgress[videoId];
+
+                if (msg) msg.innerText = `Progress: ${currentStep}/3 (Watching Ad...)`;
+                if (progressBar) progressBar.style.width = (currentStep * 33.33) + '%';
+
+                const runAdSdk = () => {
+                    if (typeof show_11691107 === 'function') {
+                        show_11691107().then(() => {
+                            checkNextStep(currentStep);
+                        }).catch((e) => {
+                            console.error("Ad error:", e);
+                            checkNextStep(currentStep); // কোনো কারণে অ্যাড ফেইল করলেও যেন ইউজার আটকে না যায়
+                        });
+                    } else {
+                        checkNextStep(currentStep);
+                    }
+                };
+
+                runAdSdk();
+            }
+
+            function checkNextStep(step) {
+                if (step < 3) {
+                    // ৫ সেকেন্ড ব্রেক বা ওয়েটিং টাইম
+                    let timeLeft = 5;
+                    if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
+
+                    let timer = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft > 0) {
+                            if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s for next ad...`;
+                        } else {
+                            clearInterval(timer);
+                            showNextAd(); // পরবর্তী অ্যাড শুরু হবে
+                        }
+                    }, 1000);
+                } else {
+                    // ৩টি অ্যাড কমপ্লিট! এখন ডাউনলোড বাটন আসবে
+                    if (msg) msg.innerText = "All ads completed! Download unlocked.";
+                    if (progressBar) progressBar.style.width = '100%';
+
+                    const botUsername = "vairalvideoszarabot"; 
+                    const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
+
+                    container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
+
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.openTelegramLink(targetUrl);
+                    }
+                }
+            }
+
+            // প্রথম অ্যাড কল করা হলো
+            showNextAd();
         }
     </script>
 
