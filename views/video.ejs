@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= post.title %></title>
+    
+    <!-- Monetag Rewarded SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='11691107' data-sdk='show_11691107'></script>
+
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 15px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .back-btn { align-self: flex-start; color: #ff9800; text-decoration: none; font-size: 16px; margin-bottom: 20px; font-weight: bold; }
+        .video-details-box { background: #1e1e1e; border-radius: 12px; padding: 20px; width: 100%; max-width: 400px; box-sizing: border-box; border: 1px solid #333; text-align: left; }
+        
+        h2 { font-size: 18px; margin-top: 0; line-height: 1.4; color: #fff; text-align: center; }
+        .post-desc { font-size: 14px; color: #ddd; margin: 15px 0; line-height: 1.6; white-space: pre-wrap; background: #2a2a2a; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800; }
+        
+        .section-title { font-size: 16px; color: #ff9800; margin: 25px 0 15px 0; border-bottom: 1px solid #444; padding-bottom: 5px; text-align: center; }
+        
+        /* স্ক্রিনশট লম্বাভাবে (নিচে নিচে) দেখানোর কোড */
+        .vertical-screenshots { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+        .vertical-screenshots img { width: 100%; border-radius: 8px; border: 1px solid #444; object-fit: cover; }
+        
+        .unlock-section { background: #111; padding: 20px; border-radius: 8px; border: 1px solid #333; text-align: center; }
+        .progress-bar-container { background: #333; border-radius: 5px; height: 10px; width: 100%; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: #ff9800; height: 100%; width: 0%; transition: width 0.3s ease; }
+        
+        .btn-unlock { display: block; width: 100%; background-color: #ff9800; color: #000; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; }
+        .btn-unlock:disabled { background-color: #555; color: #888; cursor: not-allowed; }
+        .btn-download { display: block; width: 100%; background-color: #28a745; color: #fff; padding: 15px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; text-align: center; }
+        .status-msg { margin-top: 12px; font-size: 14px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <a href="/" class="back-btn">← Back to Home</a>
+
+    <div class="video-details-box">
+        <!-- Video Title -->
+        <h2><%= post.title %></h2>
+        
+        <!-- Description -->
+        <% if (post.description) { %>
+            <div class="post-desc"><%= post.description %></div>
+        <% } %>
+
+        <!-- Screenshots (Vertical / লম্বাভাবে) -->
+        <% if (post.screenshots) { %>
+            <div class="section-title">Screenshots</div>
+            <div class="vertical-screenshots">
+                <% const screens = post.screenshots.split(','); %>
+                <% screens.forEach(function(src) { %>
+                    <% if(src.trim()) { %>
+                        <img src="<%= src.trim() %>" alt="Screenshot">
+                    <% } %>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <!-- Unlock Section at the bottom -->
+        <div class="unlock-section">
+            <p style="font-size: 14px; color: #ff9800; margin: 0; font-weight: bold;">▶️ Watch 3 sets of ads to unlock</p>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-<%= post.shortCode %>"></div>
+            </div>
+
+            <div id="btn-container-<%= post.shortCode %>">
+                <button class="btn-unlock" id="btn-<%= post.shortCode %>" onclick="startMultiAdFlow('<%= post.shortCode %>')">🔒 Unlock Video</button>
+            </div>
+            
+            <div id="msg-<%= post.shortCode %>" class="status-msg">Progress: 0/3 (Click to start)</div>
+        </div>
+    </div>
+
+    <script>
+        let adProgress = 0;
+
+        function startMultiAdFlow(shortCode) {
+            const btn = document.getElementById('btn-' + shortCode);
+            const msg = document.getElementById('msg-' + shortCode);
+            const progressBar = document.getElementById('progress-' + shortCode);
+            const container = document.getElementById('btn-container-' + shortCode);
+
+            btn.disabled = true;
+
+            function showNextAd() {
+                adProgress++;
+                const currentStep = adProgress;
+
+                msg.innerText = `Progress: ${currentStep}/3 (Watching Ad...)`;
+                progressBar.style.width = (currentStep * 33.33) + '%';
+
+                if (typeof show_11691107 === 'function') {
+                    show_11691107().then(() => checkNextStep(currentStep)).catch(() => checkNextStep(currentStep));
+                } else {
+                    checkNextStep(currentStep);
+                }
+            }
+
+            function checkNextStep(step) {
+                if (step < 3) {
+                    let timeLeft = 5;
+                    msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
+
+                    let timer = setInterval(() => {
+                        timeLeft--;
+                        if (timeLeft > 0) {
+                            msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
+                        } else {
+                            clearInterval(timer);
+                            showNextAd();
+                        }
+                    }, 1000);
+                } else {
+                    msg.innerText = "All ads completed! Download unlocked.";
+                    progressBar.style.width = '100%';
+                    const targetUrl = `https://t.me/onlyvpssbot?start=` + shortCode;
+                    container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
+                }
+            }
+
+            showNextAd();
+        }
+    </script>
+</body>
+</html>

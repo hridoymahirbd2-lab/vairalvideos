@@ -3,145 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TG PREMIUM - VIDEOS</title>
-
-    <!-- Monetag Rewarded SDK -->
-    <script src='//libtl.com/sdk.js' data-zone='11691107' data-sdk='show_11691107'></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+    <title>TG PREMIUM HUB</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; text-align: center; padding: 15px; margin: 0; }
-        h1 { color: #fff; font-size: 20px; margin-bottom: 10px; }
-        
-        .banner-ad { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 0 auto 20px auto; max-width: 320px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .banner-ad a { color: #856404; font-weight: bold; text-decoration: none; font-size: 14px; }
-        
+        h1 { color: #fff; font-size: 20px; margin-bottom: 20px; }
         .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .post-card { background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 100%; max-width: 350px; padding: 15px; text-align: center; box-sizing: border-box; border: 1px solid #333; }
         
-        .main-thumb { width: 100%; border-radius: 8px; height: 200px; object-fit: cover; }
-        .post-card h3 { margin: 10px 0 5px 0; font-size: 16px; color: #fff; }
+        /* লিংকের স্টাইল */
+        .post-card-link { text-decoration: none; color: inherit; display: block; width: 100%; max-width: 350px; }
         
-        .post-desc { font-size: 13px; color: #b0b0b0; margin: 5px 0 12px 0; text-align: left; line-height: 1.4; word-break: break-word; }
+        .post-card { background: #1e1e1e; border-radius: 12px; padding: 15px; box-sizing: border-box; border: 1px solid #333; transition: 0.3s; }
+        .post-card:hover { border-color: #ff9800; }
         
-        .screenshot-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .screenshot-container img { border-radius: 5px; height: 80px; width: 120px; object-fit: cover; flex-shrink: 0; border: 1px solid #444; }
-        
-        .progress-bar-container { background: #333; border-radius: 5px; height: 8px; width: 100%; margin: 10px 0; overflow: hidden; }
-        .progress-bar { background: #ff9800; height: 100%; width: 0%; transition: width 0.3s ease; }
-        
-        .btn-unlock { display: block; width: 100%; background-color: #ff9800; color: #000; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; }
-        .btn-unlock:disabled { background-color: #555; color: #888; cursor: not-allowed; }
-        .btn-download { display: block; width: 100%; background-color: #28a745; color: #fff; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; border: none; cursor: pointer; font-size: 16px; box-sizing: border-box; text-align: center; }
-        .status-msg { margin-top: 10px; font-size: 13px; color: #aaa; }
+        .main-thumb { width: 100%; border-radius: 8px; height: 220px; object-fit: cover; }
+        .post-card h3 { margin: 15px 0 5px 0; font-size: 16px; color: #fff; line-height: 1.4; }
     </style>
 </head>
 <body>
-
     <h1>TG PREMIUM HUB</h1>
-
-    <div class="banner-ad">
-        <p style="margin: 0 0 3px 0; font-size: 11px; color: #856404;">⭐ Sponsored ⭐</p>
-        <a href="https://omg10.com/4/11691048" target="_blank">Click here to visit our sponsor!</a>
-    </div>
-
+    
     <div class="container">
         <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
             <% posts.forEach(function(post) { %>
-                <div class="post-card">
-                    
-                    <% if (post.thumbnail) { %>
-                        <img src="<%= post.thumbnail %>" alt="Main Thumbnail" class="main-thumb">
-                    <% } %>
-                    
-                    <h3><%= post.title %></h3>
-                    
-                    <% if (post.description) { %>
-                        <div class="post-desc"><%= post.description %></div>
-                    <% } %>
-
-                    <% if (post.screenshots) { %>
-                        <div class="screenshot-container">
-                            <% const screens = post.screenshots.split(','); %>
-                            <% screens.forEach(function(src) { %>
-                                <% if(src.trim()) { %>
-                                    <img src="<%= src.trim() %>" alt="Screenshot">
-                                <% } %>
-                            <% }); %>
-                        </div>
-                    <% } %>
-                    
-                    <p style="font-size: 13px; color: #ff9800; margin: 5px 0;">▶️ Watch 3 sets of ads to unlock</p>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="progress-<%= post.shortCode %>"></div>
+                <!-- পুরো কার্ডটিকে একটি লিংক বানানো হয়েছে, ক্লিক করলেই পরের পেজে যাবে -->
+                <a href="/video/<%= post.shortCode %>" class="post-card-link">
+                    <div class="post-card">
+                        <% if (post.thumbnail) { %>
+                            <img src="<%= post.thumbnail %>" alt="Thumbnail" class="main-thumb">
+                        <% } %>
+                        <h3><%= post.title %></h3>
                     </div>
-
-                    <div id="btn-container-<%= post.shortCode %>">
-                        <button class="btn-unlock" id="btn-<%= post.shortCode %>" onclick="startMultiAdFlow('<%= post.shortCode %>')">🔒 Unlock Video</button>
-                    </div>
-                    <div id="msg-<%= post.shortCode %>" class="status-msg">Progress: 0/3 (Click to start)</div>
-                </div>
+                </a>
             <% }); %>
         <% } else { %>
             <div style="color: #aaa; margin-top: 30px;">
-                <p>No videos available yet. <br><a href="/admin" style="color: #ff9800;">Go to Admin Panel</a> to add posts.</p>
+                <p>No videos available yet.<br><a href="/admin" style="color: #ff9800;">Go to Admin</a></p>
             </div>
         <% } %>
     </div>
-
-    <script>
-        let adProgress = {};
-
-        function startMultiAdFlow(shortCode) {
-            if (!adProgress[shortCode]) adProgress[shortCode] = 0;
-
-            const btn = document.getElementById('btn-' + shortCode);
-            const msg = document.getElementById('msg-' + shortCode);
-            const progressBar = document.getElementById('progress-' + shortCode);
-            const container = document.getElementById('btn-container-' + shortCode);
-
-            btn.disabled = true;
-
-            function showNextAd() {
-                adProgress[shortCode]++;
-                const currentStep = adProgress[shortCode];
-
-                if (msg) msg.innerText = `Progress: ${currentStep}/3 (Watching Ad...)`;
-                if (progressBar) progressBar.style.width = (currentStep * 33.33) + '%';
-
-                if (typeof show_11691107 === 'function') {
-                    show_11691107().then(() => checkNextStep(currentStep)).catch(() => checkNextStep(currentStep));
-                } else {
-                    checkNextStep(currentStep);
-                }
-            }
-
-            function checkNextStep(step) {
-                if (step < 3) {
-                    let timeLeft = 5;
-                    if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
-
-                    let timer = setInterval(() => {
-                        timeLeft--;
-                        if (timeLeft > 0) {
-                            if (msg) msg.innerText = `Step ${step}/3 completed! Wait ${timeLeft}s...`;
-                        } else {
-                            clearInterval(timer);
-                            showNextAd();
-                        }
-                    }, 1000);
-                } else {
-                    if (msg) msg.innerText = "All ads completed! Download unlocked.";
-                    if (progressBar) progressBar.style.width = '100%';
-
-                    const targetUrl = `https://t.me/onlyvpssbot?start=` + shortCode;
-                    container.innerHTML = `<a href="${targetUrl}" class="btn-download" target="_blank">📥 DOWNLOAD NOW</a>`;
-                }
-            }
-
-            showNextAd();
-        }
-    </script>
-
 </body>
 </html>
