@@ -10,10 +10,13 @@ app.use(express.static('public'));
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 const bot = new TelegramBot(token, { polling: true });
 
-let postsList = [];
+// পার্মানেন্ট মেমোরি অ্যারে
+if (!global.myPosts) {
+    global.myPosts = [];
+}
 
 app.get('/', (req, res) => {
-    res.render('index', { posts: postsList });
+    res.render('index', { posts: global.myPosts });
 });
 
 app.get('/admin', (req, res) => {
@@ -23,8 +26,7 @@ app.get('/admin', (req, res) => {
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
-        // অতিরিক্ত স্পেস দূর করার জন্য .trim() ব্যবহার করা হলো
-        postsList.unshift({ 
+        global.myPosts.unshift({ 
             title: title.trim(), 
             thumbnail: thumbnail.trim(), 
             videoId: videoId.trim() 
@@ -35,7 +37,7 @@ app.post('/add-post', (req, res) => {
     }
 });
 
-// ১০০% নিখুঁত টেলিগ্রাম বট হ্যান্ডলার
+// ১০০% নিশ্চিত ভিডিও পাঠানোর বট হ্যান্ডলার
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -44,17 +46,20 @@ bot.on('message', (msg) => {
         const parts = text.split(' ');
         if (parts.length > 1) {
             const requestedId = parts[1].trim(); 
-            const foundPost = postsList.find(p => p.videoId.trim() === requestedId);
+            const foundPost = global.myPosts.find(p => p.videoId === requestedId);
 
             if (foundPost) {
-                bot.sendVideo(chatId, foundPost.videoId, { 
-                    caption: `🎥 Here is your video: ${foundPost.title}` 
+                // ইউজারকে আগে টেক্সট পাঠিয়ে চ্যাট একটিভ করা, তারপর ভিডিও পাঠানো
+                bot.sendMessage(chatId, "⏳ Your video is loading...").then(() => {
+                    return bot.sendVideo(chatId, foundPost.videoId, { 
+                        caption: `🎥 Here is your video: ${foundPost.title}` 
+                    });
                 }).catch((err) => {
-                    console.error("Telegram Send Video Error:", err);
-                    bot.sendMessage(chatId, "⚠️ Sorry, failed to send the video file. Make sure the File ID is correct.");
+                    console.error("Bot send error:", err);
+                    bot.sendMessage(chatId, "⚠️ Failed to send video. Make sure the File ID is correct.");
                 });
             } else {
-                bot.sendMessage(chatId, "⚠️ Sorry, video not found in the database.");
+                bot.sendMessage(chatId, "⚠️ Sorry, video not found in database.");
             }
         }
     }
