@@ -8,13 +8,10 @@ app.use(express.json());
 app.use(express.static('public'));
 
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
-
-// পোলিং কনফ্লিক্ট এড়ানোর জন্য পোলিং বন্ধ করে সরাসরি ওয়েবটোকেন বা সেফ ইনস্ট্যান্স মোড দেওয়া হলো
 const bot = new TelegramBot(token, { polling: true });
 
-// পোলিং এরর যাতে কনসোল লাল না করে
 bot.on('polling_error', (error) => {
-    // ইগনোর কনফ্লিক্ট এরর লোগো
+    // পোলিং এরর ইগনোর করবে যাতে লোগ পরিষ্কার থাকে
 });
 
 let postsList = [];
@@ -41,27 +38,30 @@ app.post('/add-post', (req, res) => {
     }
 });
 
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;
+// সরাসরি এবং ইনস্ট্যান্ট ভিডিও পাঠানোর লজিক
+bot.on('message', async (msg) => {
+    try {
+        const chatId = msg.chat.id;
+        const text = msg.text;
 
-    if (text && text.startsWith('/start')) {
-        const parts = text.split(' ');
-        if (parts.length > 1) {
-            const requestedId = parts[1].trim(); 
-            const foundPost = postsList.find(p => p.videoId === requestedId);
+        if (text && text.startsWith('/start')) {
+            const parts = text.split(' ');
+            if (parts.length > 1) {
+                const requestedId = parts[1].trim(); 
+                const foundPost = postsList.find(p => p.videoId === requestedId);
 
-            if (foundPost) {
-                bot.sendVideo(chatId, foundPost.videoId, { 
-                    caption: `🎥 Here is your video: ${foundPost.title}` 
-                }).catch((err) => {
-                    console.error("Send video error:", err.message);
-                    bot.sendMessage(chatId, "⚠️ Failed to send video. Make sure the File ID is correct.");
-                });
-            } else {
-                bot.sendMessage(chatId, "⚠️ Sorry, video not found in database.");
+                if (foundPost) {
+                    await bot.sendMessage(chatId, "🎬 Your video is arriving...");
+                    await bot.sendVideo(chatId, foundPost.videoId, { 
+                        caption: `🎥 Here is your video: ${foundPost.title}` 
+                    });
+                } else {
+                    await bot.sendMessage(chatId, "⚠️ Sorry, video not found in database.");
+                }
             }
         }
+    } catch (err) {
+        console.error("Telegram Error:", err.message);
     }
 });
 
