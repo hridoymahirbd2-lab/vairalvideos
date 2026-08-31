@@ -13,21 +13,11 @@ const bot = new TelegramBot(token, { polling: true });
 let postsList = [];
 
 app.get('/', (req, res) => {
-    try {
-        res.render('index', { posts: postsList });
-    } catch (err) {
-        console.error("View Render Error:", err.message);
-        res.status(500).send("Template Error: " + err.message);
-    }
+    res.render('index', { posts: postsList });
 });
 
 app.get('/admin', (req, res) => {
-    try {
-        res.render('admin');
-    } catch (err) {
-        console.error("Admin Render Error:", err.message);
-        res.status(500).send("Admin Template Error: " + err.message);
-    }
+    res.render('admin');
 });
 
 app.post('/add-post', (req, res) => {
@@ -40,6 +30,7 @@ app.post('/add-post', (req, res) => {
     }
 });
 
+// টেলিগ্রাম বটের কমান্ড হ্যান্ডলার (ভিডিও পাঠানোর জন্য নিখুঁত কোড)
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -47,17 +38,18 @@ bot.on('message', (msg) => {
     if (text && text.startsWith('/start')) {
         const parts = text.split(' ');
         if (parts.length > 1) {
-            const requestedId = parts[1]; 
+            const requestedId = parts[1].trim(); 
             const foundPost = postsList.find(p => p.videoId === requestedId);
 
             if (foundPost) {
                 bot.sendVideo(chatId, foundPost.videoId, { 
-                    caption: `Here is your video: ${foundPost.title}` 
+                    caption: `🎥 Here is your video: ${foundPost.title}` 
                 }).catch((err) => {
-                    bot.sendMessage(chatId, "Sorry, failed to send the video.");
+                    console.error("Send video error:", err);
+                    bot.sendMessage(chatId, "Sorry, failed to send the video file ID.");
                 });
             } else {
-                bot.sendMessage(chatId, "Sorry, video not found or invalid link.");
+                bot.sendMessage(chatId, "Sorry, video not found or link has expired.");
             }
         }
     }
