@@ -23,13 +23,19 @@ app.get('/admin', (req, res) => {
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
-        postsList.unshift({ title, thumbnail, videoId: videoId.trim() });
+        // অতিরিক্ত স্পেস দূর করার জন্য .trim() ব্যবহার করা হলো
+        postsList.unshift({ 
+            title: title.trim(), 
+            thumbnail: thumbnail.trim(), 
+            videoId: videoId.trim() 
+        });
         res.redirect('/');
     } else {
         res.send("All fields are required! <a href='/admin'>Go Back</a>");
     }
 });
 
+// ১০০% নিখুঁত টেলিগ্রাম বট হ্যান্ডলার
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
@@ -38,14 +44,14 @@ bot.on('message', (msg) => {
         const parts = text.split(' ');
         if (parts.length > 1) {
             const requestedId = parts[1].trim(); 
-            const foundPost = postsList.find(p => p.videoId === requestedId);
+            const foundPost = postsList.find(p => p.videoId.trim() === requestedId);
 
             if (foundPost) {
                 bot.sendVideo(chatId, foundPost.videoId, { 
                     caption: `🎥 Here is your video: ${foundPost.title}` 
                 }).catch((err) => {
                     console.error("Telegram Send Video Error:", err);
-                    bot.sendMessage(chatId, "⚠️ Sorry, the video file ID is invalid or expired.");
+                    bot.sendMessage(chatId, "⚠️ Sorry, failed to send the video file. Make sure the File ID is correct.");
                 });
             } else {
                 bot.sendMessage(chatId, "⚠️ Sorry, video not found in the database.");
