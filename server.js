@@ -12,9 +12,10 @@ const bot = new TelegramBot(token, { polling: true });
 
 bot.on('polling_error', (error) => {});
 
-let postsList = [];
+let postsList = []; 
 
 app.get('/', (req, res) => {
+    // ক্যাটাগরি ফিল্টারিং বাদ দিয়ে শুধু পোস্টগুলো পাঠানো হচ্ছে
     res.render('index', { posts: postsList });
 });
 
@@ -23,19 +24,21 @@ app.get('/admin', (req, res) => {
 });
 
 app.post('/add-post', (req, res) => {
-    const { title, thumbnail, videoId } = req.body;
+    // ক্যাটাগরি ভ্যারিয়েবল বাদ দেওয়া হয়েছে
+    const { title, thumbnail, videoId, description } = req.body;
+    
     if (title && thumbnail && videoId) {
-        // লিংকের সাইজ ছোট রাখার জন্য শর্ট কোড
         const shortCode = 'vid' + Math.floor(Math.random() * 1000000);
         postsList.unshift({ 
             title: title.trim(), 
             thumbnail: thumbnail.trim(), 
             fileId: videoId.trim(),
+            description: description ? description.trim() : '', // বিস্তারিত বিবরণ থাকছে
             shortCode: shortCode
         });
         res.redirect('/');
     } else {
-        res.send("All fields are required! <a href='/admin'>Go Back</a>");
+        res.send("Title, Thumbnail and Video ID are required! <a href='/admin'>Go Back</a>");
     }
 });
 
@@ -47,7 +50,7 @@ bot.on('message', async (msg) => {
 
         if (video) {
             const fileId = video.file_id;
-            await bot.sendMessage(chatId, `✅ Video Received!\n\n📋 Copy this File ID for Admin Panel:\n\n<code>${fileId}</code>`, { parse_mode: 'HTML' });
+            await bot.sendMessage(chatId, `✅ Video Received Successfully!\n\n📋 Copy this File ID for Admin Panel:\n\n<code>${fileId}</code>`, { parse_mode: 'HTML' });
             return;
         }
 
@@ -60,10 +63,10 @@ bot.on('message', async (msg) => {
                 if (foundPost) {
                     await bot.sendMessage(chatId, "🎬 Sending your video, please wait...");
                     await bot.sendVideo(chatId, foundPost.fileId, { 
-                        caption: `🎥 Here is your video: ${foundPost.title}\n\nHope you enjoyed the videos! They will be deleted after 10 minutes.` 
+                        caption: `🎥 Here is your video: ${foundPost.title}\n\n📝 Details: ${foundPost.description}` 
                     });
                 } else {
-                    await bot.sendMessage(chatId, "⚠️ Sorry, video not found in database.");
+                    await bot.sendMessage(chatId, "⚠️ Sorry, video not found.");
                 }
             } else {
                 await bot.sendMessage(chatId, "👋 Welcome to OnlyVPSS Bot!");
