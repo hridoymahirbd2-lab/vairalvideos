@@ -1,5 +1,6 @@
 const express = require('express');
 const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
 const path = require('path');
 const app = express();
 
@@ -11,9 +12,31 @@ app.use(express.static('public'));
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 const bot = new TelegramBot(token, { polling: true });
 
-let posts = [];
+// ডেটা সেভ রাখার জন্য একটি json ফাইল ব্যবহার করা হলো যাতে সার্ভার রিস্টার্ট হলেও পোস্ট মুছে না যায়
+const DATA_FILE = path.join(__dirname, 'posts.json');
+
+function getPosts() {
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const data = fs.readFileSync(DATA_FILE, 'utf8');
+            return JSON.parse(data);
+        }
+    } catch (err) {
+        console.error("Error reading posts:", err);
+    }
+    return [];
+}
+
+function savePosts(posts) {
+    try {
+        fs.writeFileSync(DATA_FILE, JSON.stringify(posts, null, 2));
+    } catch (err) {
+        console.error("Error saving posts:", err);
+    }
+}
 
 app.get('/', (req, res) => {
+    const posts = getPosts();
     res.render('index', { posts });
 });
 
@@ -24,7 +47,10 @@ app.get('/admin', (req, res) => {
 app.post('/add-post', (req, res) => {
     const { title, thumbnail, videoId } = req.body;
     if (title && thumbnail && videoId) {
+        let posts = getPosts();
         posts.unshift({ title, thumbnail, videoId });
+        savePosts(posts); // ফাইলে পার্মানেন্ট সেভ হবে
+
         res.send(`
             <!DOCTYPE html>
             <html lang="en">
@@ -59,6 +85,7 @@ bot.on('message', (msg) => {
         const parts = text.split(' ');
         if (parts.length > 1) {
             const requestedId = parts[1]; 
+            let posts = getPosts();
             const foundPost = posts.find(p => p.videoId === requestedId);
 
             if (foundPost) {
