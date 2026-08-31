@@ -50,8 +50,6 @@
             padding: 15px;
             text-align: center;
             box-sizing: border-box;
-            position: relative;
-            z-index: 10;
         }
         .post-card img {
             width: 100%;
@@ -76,8 +74,6 @@
             cursor: pointer;
             width: 100%;
             font-size: 15px;
-            position: relative;
-            z-index: 20;
         }
         .btn:hover {
             background-color: #006699;
@@ -89,9 +85,17 @@
         .status-msg {
             margin-top: 10px;
             font-size: 14px;
-            color: #333;
-            position: relative;
-            z-index: 20;
+        }
+        .telegram-link-btn {
+            display: inline-block;
+            margin-top: 8px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
         }
         .no-posts {
             color: #777;
@@ -117,7 +121,7 @@
                         <img src="<%= post.thumbnail %>" alt="Thumbnail">
                     <% } %>
                     <h3><%= post.title %></h3>
-                    <button class="btn" id="btn-<%= post.videoId %>" onclick="playAdAndRedirect('<%= post.videoId %>')">Watch Video</button>
+                    <button class="btn" id="btn-<%= post.videoId %>" onclick="playAdAndWatch('<%= post.videoId %>')">Watch Video</button>
                     <div id="msg-<%= post.videoId %>" class="status-msg"></div>
                 </div>
             <% }); %>
@@ -129,7 +133,7 @@
     </div>
 
     <script>
-        function playAdAndRedirect(videoId) {
+        function playAdAndWatch(videoId) {
             const btn = document.getElementById('btn-' + videoId);
             const msg = document.getElementById('msg-' + videoId);
 
@@ -139,25 +143,22 @@
             const botUsername = "vairalvideoszarabot"; 
             const targetUrl = `https://t.me/${botUsername}?start=` + videoId;
 
-            const doRedirect = () => {
+            const showLink = () => {
                 if (msg) {
-                    // এমন একটি বাটন দেওয়া হলো যা যেকোনো ডিভাইসে ১০০% কাজ করবে এবং ক্লিক করা সহজ হবে
-                    msg.innerHTML = `✅ Ad finished!<br><button onclick="window.open('${targetUrl}', '_blank')" style="margin-top:8px; background:#28a745; color:white; border:none; padding:8px 16px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:14px; position:relative; z-index:30;">Open in Telegram</button>`;
-                }
-                if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.openTelegramLink(targetUrl);
+                    // সরাসরি স্ট্যান্ডার্ড <a> ট্যাগ ব্যবহার করা হলো, যা কোনো ব্রাউজার ব্লক করতে পারবে না
+                    msg.innerHTML = `✅ Ad finished!<br><a href="${targetUrl}" class="telegram-link-btn" target="_blank">Open in Telegram</a>`;
                 }
             };
 
             if (typeof show_11691107 === 'function') {
                 show_11691107().then(() => {
-                    doRedirect();
+                    showLink();
                 }).catch((e) => {
                     console.error("Ad error:", e);
-                    doRedirect();
+                    showLink();
                 });
             } else {
-                doRedirect();
+                showLink();
             }
         }
     </script>
