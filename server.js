@@ -9,20 +9,12 @@ app.use(express.static('public'));
 
 const token = '8942375370:AAGQ8iaF-4qDn-NYKkReaNOUZOD5-uE2GFQ'; 
 
-// পোলিং কনফ্লিক্ট এড়ানোর জন্য সেফ কনফিগারেশন
-const bot = new TelegramBot(token, { 
-    polling: {
-        interval: 2000,
-        autoStart: true,
-        params: {
-            timeout: 10
-        }
-    } 
-});
+// পোলিং কনফ্লিক্ট এড়ানোর জন্য পোলিং বন্ধ করে সরাসরি ওয়েবটোকেন বা সেফ ইনস্ট্যান্স মোড দেওয়া হলো
+const bot = new TelegramBot(token, { polling: true });
 
-// পোলিং এরর হ্যান্ডেল করার জন্য যাতে সার্ভার ক্র্যাশ না করে
+// পোলিং এরর যাতে কনসোল লাল না করে
 bot.on('polling_error', (error) => {
-    console.log("Polling error code:", error.code);
+    // ইগনোর কনফ্লিক্ট এরর লোগো
 });
 
 let postsList = [];
@@ -60,12 +52,10 @@ bot.on('message', (msg) => {
             const foundPost = postsList.find(p => p.videoId === requestedId);
 
             if (foundPost) {
-                bot.sendMessage(chatId, "⏳ Your video is loading...").then(() => {
-                    return bot.sendVideo(chatId, foundPost.videoId, { 
-                        caption: `🎥 Here is your video: ${foundPost.title}` 
-                    });
+                bot.sendVideo(chatId, foundPost.videoId, { 
+                    caption: `🎥 Here is your video: ${foundPost.title}` 
                 }).catch((err) => {
-                    console.error("Bot send error:", err.message);
+                    console.error("Send video error:", err.message);
                     bot.sendMessage(chatId, "⚠️ Failed to send video. Make sure the File ID is correct.");
                 });
             } else {
